@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('pengeluaran', function (Blueprint $table) {
+            $table->id('id_pengeluaran');
+            $table->date('tgl_pengeluaran');
+            $table->string('kategori')->nullable();
+            $table->string('nama_pengeluaran');
+            $table->integer('nominal')->default(0);
+            $table->text('keterangan')->nullable();
+            $table->integer('id_admin')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('pengeluaran');
+    }
+};
