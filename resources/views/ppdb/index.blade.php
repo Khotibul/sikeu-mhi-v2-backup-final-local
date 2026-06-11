@@ -14,7 +14,7 @@
             margin-bottom: 20px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .ppdb-hero:after {
@@ -25,7 +25,7 @@
             border-radius: 999px;
             background: rgba(255, 255, 255, .14);
             right: -65px;
-            top: -80px;
+            top: -80px
         }
 
         .ppdb-hero h2 {
@@ -33,7 +33,7 @@
             font-size: 30px;
             font-weight: 950;
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .ppdb-hero p {
@@ -41,14 +41,14 @@
             line-height: 1.7;
             font-weight: 700;
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .ppdb-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
-            margin-bottom: 18px;
+            margin-bottom: 18px
         }
 
         .stat-card {
@@ -58,7 +58,7 @@
             padding: 18px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .stat-card:after {
@@ -69,15 +69,15 @@
             border-radius: 999px;
             background: var(--tosca-soft);
             right: -30px;
-            top: -34px;
+            top: -34px
         }
 
         .stat-card.pink:after {
-            background: var(--pink-soft);
+            background: var(--pink-soft)
         }
 
         .stat-card.warn:after {
-            background: var(--warning-soft);
+            background: var(--warning-soft)
         }
 
         .stat-card span {
@@ -88,7 +88,7 @@
             text-transform: uppercase;
             margin-bottom: 8px;
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .stat-card strong {
@@ -97,15 +97,15 @@
             font-size: 28px;
             font-weight: 950;
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .stat-card.pink strong {
-            color: var(--pink-dark);
+            color: var(--pink-dark)
         }
 
         .stat-card.warn strong {
-            color: #b45309;
+            color: #b45309
         }
 
         .ppdb-panel {
@@ -115,7 +115,7 @@
             padding: 22px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .ppdb-panel:after {
@@ -141,19 +141,19 @@
             grid-template-columns: 1fr auto;
             gap: 12px;
             align-items: end;
-            margin-bottom: 16px;
+            margin-bottom: 16px
         }
 
         .filter-ppdb {
             display: grid;
             grid-template-columns: 1.4fr .65fr .65fr .65fr auto auto;
             gap: 10px;
-            align-items: end;
+            align-items: end
         }
 
         .field {
             display: grid;
-            gap: 7px;
+            gap: 7px
         }
 
         .field label {
@@ -184,7 +184,7 @@
 
         .control:focus {
             border-color: var(--tosca);
-            box-shadow: 0 0 0 4px rgba(18, 169, 154, .1);
+            box-shadow: 0 0 0 4px rgba(18, 169, 154, .1)
         }
 
         .table-wrap {
@@ -217,48 +217,10 @@
             text-transform: uppercase
         }
 
-        /* Pagination tweaks: smaller, compact buttons for this view */
-        .pagination {
-            display: flex;
-            gap: 6px;
-            padding-left: 0;
-            margin: 12px 0 0;
-            list-style: none;
-        }
-
-        .pagination li {
-            display: inline-block;
-        }
-
-        .pagination li a,
-        .pagination li span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6px 10px;
-            min-width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 13px;
-            text-decoration: none;
-            color: var(--text);
-            border: 1px solid var(--border);
-            background: white;
-        }
-
-        .pagination li .active,
-        .pagination li a[aria-current="page"],
-        .pagination li span[aria-current="page"] {
-            background: var(--tosca);
-            color: #fff;
-            border-color: var(--tosca);
-        }
-
         .student {
             display: flex;
             gap: 11px;
-            align-items: center;
+            align-items: center
         }
 
         .avatar {
@@ -271,19 +233,19 @@
             justify-content: center;
             color: var(--tosca-dark);
             font-weight: 950;
-            flex: 0 0 auto;
+            flex: 0 0 auto
         }
 
         .student strong {
             display: block;
             text-transform: uppercase;
-            font-weight: 950;
+            font-weight: 950
         }
 
         .student small {
             color: var(--muted);
             font-weight: 800;
-            line-height: 1.5;
+            line-height: 1.5
         }
 
         .badge {
@@ -293,33 +255,89 @@
             font-size: 11px;
             font-weight: 950;
             text-transform: uppercase;
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .b-pending {
             background: var(--warning-soft);
-            color: #b45309;
+            color: #b45309
         }
 
         .b-diterima {
             background: var(--tosca-soft);
-            color: var(--tosca-dark);
+            color: var(--tosca-dark)
         }
 
         .b-ditolak {
             background: var(--pink-soft);
-            color: var(--pink-dark);
+            color: var(--pink-dark)
         }
 
         .b-soft {
             background: #f1f5f9;
-            color: #334155;
+            color: #334155
+        }
+
+        .btn-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-weight: 900;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--tosca), var(--tosca-dark, #0f766e));
+            color: white !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-weight: 900;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .btn-light {
+            background: #f1f5f9;
+            color: #334155 !important;
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-weight: 900;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }
 
         .aksi {
             display: flex;
             gap: 7px;
-            flex-wrap: wrap;
+            flex-wrap: wrap
         }
 
         .icon-btn {
@@ -332,27 +350,27 @@
             justify-content: center;
             text-decoration: none;
             cursor: pointer;
-            font-weight: 950;
+            font-weight: 950
         }
 
         .edit {
             background: #eefbf8;
-            color: var(--tosca-dark);
+            color: var(--tosca-dark)
         }
 
         .print {
             background: linear-gradient(135deg, var(--tosca), #087c73);
-            color: white !important;
+            color: white !important
         }
 
         .accept {
             background: linear-gradient(135deg, #22c55e, #15803d);
-            color: white;
+            color: white
         }
 
         .delete {
             background: linear-gradient(135deg, #ef476f, #e11d48);
-            color: white;
+            color: white
         }
 
         .modal-ppdb {
@@ -364,11 +382,11 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 18px;
+            padding: 18px
         }
 
         .modal-ppdb.show {
-            display: flex;
+            display: flex
         }
 
         .modal-box {
@@ -388,7 +406,7 @@
             border-radius: 28px 28px 0 0;
             display: flex;
             justify-content: space-between;
-            gap: 12px;
+            gap: 12px
         }
 
         .modal-head h3 {
@@ -409,7 +427,7 @@
             background: rgba(255, 255, 255, .22);
             color: white;
             font-size: 18px;
-            cursor: pointer;
+            cursor: pointer
         }
 
         .modal-body {
@@ -424,13 +442,13 @@
         .grid2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
+            gap: 14px
         }
 
         .grid3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
+            gap: 14px
         }
 
         .section-title {
@@ -470,11 +488,11 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 18px;
+            padding: 18px
         }
 
         .berkas-modal.show {
-            display: flex;
+            display: flex
         }
 
         .berkas-box {
@@ -496,7 +514,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px;
+            gap: 14px
         }
 
         .berkas-head h3 {
@@ -510,7 +528,7 @@
             font-size: 13px;
             opacity: .94;
             font-weight: 750;
-            line-height: 1.5;
+            line-height: 1.5
         }
 
         .berkas-close {
@@ -522,7 +540,7 @@
             color: white;
             font-size: 20px;
             font-weight: 950;
-            cursor: pointer;
+            cursor: pointer
         }
 
         .berkas-body {
@@ -532,7 +550,7 @@
         .berkas-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            gap: 16px
         }
 
         .berkas-card {
@@ -540,7 +558,7 @@
             border-radius: 22px;
             padding: 16px;
             background: #fbfffe;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, .04);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, .04)
         }
 
         .berkas-card h4 {
@@ -550,7 +568,7 @@
             font-weight: 950;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 8px
         }
 
         .berkas-preview {
@@ -565,27 +583,27 @@
             overflow: hidden;
             color: #64748b;
             font-weight: 850;
-            text-align: center;
+            text-align: center
         }
 
         .berkas-preview img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background: white;
+            background: white
         }
 
         .berkas-empty {
             color: #94a3b8;
             font-weight: 850;
-            line-height: 1.6;
+            line-height: 1.6
         }
 
         .berkas-actions {
             margin-top: 12px;
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
+            flex-wrap: wrap
         }
 
         .berkas-btn {
@@ -599,13 +617,13 @@
             align-items: center;
             gap: 6px;
             background: linear-gradient(135deg, var(--tosca), #087c73);
-            color: #fff !important;
+            color: #fff !important
         }
 
         .berkas-btn.light {
             background: #f1f5f9;
             color: #334155 !important;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border)
         }
 
         .berkas-count {
@@ -622,7 +640,85 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid white;
+            border: 2px solid white
+        }
+
+        /* FIX PAGINATION */
+        .pagination-wrapper {
+            margin-top: 25px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .pagination-wrapper nav svg {
+            width: 20px !important;
+            height: 20px !important;
+            max-width: 20px !important;
+        }
+
+        .pagination-wrapper .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            gap: 6px;
+            margin: 0;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .pagination-wrapper .page-item .page-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            background-color: #fff;
+            border: 1px solid #d7e1e7;
+            border-radius: 12px;
+            color: #334155;
+            font-weight: 800;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .pagination-wrapper .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--tosca), #087c73);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+        }
+
+        .pagination-wrapper .page-item:not(.active):not(.disabled) .page-link:hover {
+            border-color: var(--tosca);
+            color: var(--tosca-dark);
+            background: #f0fdfa;
+            transform: translateY(-2px);
+        }
+
+        .pagination-wrapper .page-item.disabled .page-link {
+            opacity: 0.5;
+            background: #f8fafc;
+            cursor: not-allowed;
+        }
+
+        .pagination-wrapper nav>div>div {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .pagination-wrapper nav span[aria-current="page"]>span {
+            background: linear-gradient(135deg, var(--tosca), #087c73) !important;
+            color: white !important;
+            border-radius: 12px;
+        }
+
+        .pagination-wrapper nav a {
+            border-radius: 12px !important;
         }
 
         @media(max-width:1000px) {
@@ -640,7 +736,9 @@
                 flex-direction: column
             }
 
-            .modal-foot .btn {
+            .modal-foot .btn,
+            .modal-foot .btn-primary,
+            .modal-foot .btn-light {
                 width: 100%
             }
 
@@ -655,6 +753,7 @@
         $search = $search ?? request('search');
         $tahunAjaran = $tahunAjaran ?? request('tahun_ajaran', 'semua');
         $statusSeleksi = $statusSeleksi ?? request('status_seleksi', 'semua');
+        $unit = $unit ?? request('unit', 'semua');
         $listTahunAjaran = $listTahunAjaran ?? ($tahunAjaranList ?? ['2025/2026', '2026/2027']);
         $statusOptions = ['Pending', 'Diterima', 'Ditolak'];
         $itemsCount = method_exists($ppdbs, 'items') ? collect($ppdbs->items()) : collect($ppdbs);
@@ -674,34 +773,17 @@
             return 'b-pending';
         };
 
+        // BYPASS: Fungsi baru untuk tembak langsung ke file fisik pakai URL Web!
         $fileUrl = function ($path) {
             if (!$path) {
                 return null;
             }
-
-            $path = ltrim((string) $path, '/');
-            $path = str_replace('\\', '/', $path);
-
-            if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) {
-                return $path;
-            }
-
-            $cleanPath = preg_replace('#^public/#', '', $path);
-            $cleanPath = preg_replace('#^storage/#', '', $cleanPath);
-
-            if (file_exists(public_path($path))) {
-                return asset($path);
-            }
-
-            if (file_exists(public_path($cleanPath))) {
-                return asset($cleanPath);
-            }
-
-            return asset('storage/' . $cleanPath);
+            $cleanPath = preg_replace('#^(public|storage)/#', '', ltrim((string) $path, '/'));
+            return asset($cleanPath);
         };
 
         $isImageFile = function ($path) {
-            return $path && preg_match('/\.(jpg|jpeg|png|webp)$/i', (string) $path);
+            return $path && preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', (string) $path);
         };
 
         $isPdfFile = function ($path) {
@@ -760,12 +842,14 @@
                     <div class="field">
                         <label>Cari Pendaftar</label>
                         <input type="text" name="search" class="control" value="{{ $search }}"
-                            placeholder="Nama, no daftar, NISN, asal sekolah, orang tua...">
+                            placeholder="Nama, no daftar, NISN...">
                     </div>
                     <div class="field">
                         <label>Tahun Ajaran</label>
                         <select name="tahun_ajaran" class="control">
-                            <option value="semua" {{ $tahunAjaran === 'semua' ? 'selected' : '' }}>Semua</option>
+                            <option value="semua"
+                                {{ strtolower($tahunAjaran) === 'semua' || $tahunAjaran === '' ? 'selected' : '' }}>Semua
+                            </option>
                             @foreach ($listTahunAjaran as $ta)
                                 <option value="{{ $ta }}" {{ $tahunAjaran == $ta ? 'selected' : '' }}>
                                     {{ $ta }}</option>
@@ -775,11 +859,11 @@
                     <div class="field">
                         <label>Unit / Jenjang</label>
                         <select name="unit" class="control">
-                            <option value="semua"
-                                {{ strtoupper($unit ?? 'SEMUA') === 'SEMUA' ? 'selected' : '' }}>
+                            <option value="semua" {{ strtolower($unit) === 'semua' || $unit === '' ? 'selected' : '' }}>
                                 Semua</option>
                             @foreach ($unitOptions ?? ['MTS' => 'MTs', 'SMP' => 'SMP', 'MA' => 'MA', 'SMK' => 'SMK'] as $unitValue => $unitLabel)
-                                <option value="{{ $unitValue }}" {{ strtoupper($unit ?? '') === $unitValue ? 'selected' : '' }}>
+                                <option value="{{ $unitValue }}"
+                                    {{ strtoupper($unit) == strtoupper($unitValue) ? 'selected' : '' }}>
                                     {{ $unitLabel }}
                                 </option>
                             @endforeach
@@ -788,35 +872,39 @@
                     <div class="field">
                         <label>Status</label>
                         <select name="status_seleksi" class="control">
-                            <option value="semua" {{ $statusSeleksi === 'semua' ? 'selected' : '' }}>Semua</option>
-                            @foreach ($statusOptions as $status)
-                                <option value="{{ $status }}" {{ $statusSeleksi == $status ? 'selected' : '' }}>
-                                    {{ $status }}</option>
+                            <option value="semua"
+                                {{ strtolower($statusSeleksi) === 'semua' || $statusSeleksi === '' ? 'selected' : '' }}>
+                                Semua</option>
+                            @foreach ($statusOptions as $statusOption)
+                                <option value="{{ $statusOption }}"
+                                    {{ strtolower($statusSeleksi) == strtolower($statusOption) ? 'selected' : '' }}>
+                                    {{ $statusOption }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">🔎 Tampilkan</button>
-                    <a href="{{ route('ppdb.index') }}" class="btn btn-light">Reset</a>
+                    <button type="submit" class="btn-primary">🔎 Tampilkan</button>
+                    <a href="{{ route('ppdb.index') }}" class="btn-light">Reset</a>
                 </form>
 
-                <div style="display:flex; gap:10px;">
+                <div class="btn-wrapper">
                     <div style="position:relative; display:inline-block;">
-                        <button type="button" class="btn btn-primary" id="exportBtn" onclick="toggleExportMenu()">📊
-                            Export</button>
+                        <button type="button" class="btn-primary" id="exportBtn" onclick="toggleExportMenu()"
+                            style="background: linear-gradient(135deg, #10b981, #059669);">⬇ Export Excel</button>
                         <div class="export-menu" id="exportMenu"
                             style="position:absolute; right:0; top:100%; margin-top:8px; background:white; border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 25px rgba(15,23,42,.12); min-width:160px; z-index:100; display:none;">
-                            <a href="{{ route('ppdb.export', ['search' => $search, 'tahun_ajaran' => $tahunAjaran, 'status_seleksi' => $statusSeleksi, 'unit' => $unit, 'format' => 'csv']) }}"
+                            <a href="{{ route('ppdb.export',request()->merge(['format' => 'csv'])->query()) }}"
                                 style="display:block; padding:12px 16px; text-decoration:none; color:var(--text); border-bottom:1px solid var(--border); font-weight:800;"
                                 onmouseover="this.style.background='#f5f5f5'"
                                 onmouseout="this.style.background='transparent'">📄 Download CSV</a>
-                            <a href="{{ route('ppdb.export', ['search' => $search, 'tahun_ajaran' => $tahunAjaran, 'status_seleksi' => $statusSeleksi, 'unit' => $unit, 'format' => 'xlsx']) }}"
+                            <a href="{{ route('ppdb.export',request()->merge(['format' => 'xlsx'])->query()) }}"
                                 style="display:block; padding:12px 16px; text-decoration:none; color:var(--text); font-weight:800;"
                                 onmouseover="this.style.background='#f5f5f5'"
                                 onmouseout="this.style.background='transparent'">📊 Download Excel</a>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="openPpdbModal('modalTambahPpdb')">+ Tambah
-                        Pendaftar</button>
+                    <button type="button" class="btn-primary" onclick="openPpdbModal('modalTambahPpdb')">
+                        + Tambah Pendaftar
+                    </button>
                 </div>
             </div>
 
@@ -930,7 +1018,9 @@
             </div>
 
             @if (method_exists($ppdbs, 'links'))
-                <div style="margin-top:16px;">{{ $ppdbs->appends(request()->except('page'))->links() }}</div>
+                <div class="pagination-wrapper">
+                    {{ $ppdbs->appends(request()->query())->links('pagination::bootstrap-4') }}
+                </div>
             @endif
         </div>
     </div>
@@ -945,16 +1035,15 @@
                 </div>
                 <button type="button" class="modal-close" onclick="closePpdbModal('modalTambahPpdb')">×</button>
             </div>
-
             <div class="modal-body">
-                <form action="{{ route('ppdb.store') }}" method="POST" class="form-modal"
-                    data-confirm="Simpan data pendaftar baru?">
+                <form action="{{ route('ppdb.store') }}" method="POST" enctype="multipart/form-data"
+                    class="form-modal" data-confirm="Simpan data pendaftar baru?">
                     @csrf
                     @include('ppdb._form', ['item' => null, 'statusOptions' => $statusOptions])
                     <div class="modal-foot">
-                        <button type="button" class="btn btn-light"
+                        <button type="button" class="btn-light"
                             onclick="closePpdbModal('modalTambahPpdb')">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan Pendaftar</button>
+                        <button type="submit" class="btn-primary">Simpan Pendaftar</button>
                     </div>
                 </form>
             </div>
@@ -974,17 +1063,16 @@
                     <button type="button" class="modal-close"
                         onclick="closePpdbModal('{{ $modalId }}')">×</button>
                 </div>
-
                 <div class="modal-body">
-                    <form action="{{ route('ppdb.update', $item->id_daftar) }}" method="POST" class="form-modal"
-                        data-confirm="Simpan perubahan data PPDB?">
+                    <form action="{{ route('ppdb.update', $item->id_daftar) }}" method="POST"
+                        enctype="multipart/form-data" class="form-modal" data-confirm="Simpan perubahan data PPDB?">
                         @csrf
                         @method('PUT')
                         @include('ppdb._form', ['item' => $item, 'statusOptions' => $statusOptions])
                         <div class="modal-foot">
-                            <button type="button" class="btn btn-light"
+                            <button type="button" class="btn-light"
                                 onclick="closePpdbModal('{{ $modalId }}')">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                            <button type="submit" class="btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -993,31 +1081,15 @@
     @endforeach
 
 
-    {{-- Modal Berkas --}}
+    {{-- Modal Berkas: Menggunakan Bypass URL (Natively via Browser) --}}
     @foreach ($ppdbs as $item)
         @php
             $berkasModalId = 'modalBerkas' . $item->id_daftar;
             $berkasList = [
-                'Kartu Keluarga' => [
-                    'field' => 'file_kk',
-                    'path' => $item->file_kk ?? null,
-                    'icon' => '👨‍👩‍👧‍👦',
-                ],
-                'KTP Orang Tua' => [
-                    'field' => 'file_ktp',
-                    'path' => $item->file_ktp ?? null,
-                    'icon' => '🪪',
-                ],
-                'Foto Santri' => [
-                    'field' => 'file_foto',
-                    'path' => $item->file_foto ?? null,
-                    'icon' => '🧑',
-                ],
-                'Ijazah / SKL' => [
-                    'field' => 'file_ijazah',
-                    'path' => $item->file_ijazah ?? null,
-                    'icon' => '📄',
-                ],
+                'Kartu Keluarga' => ['path' => $item->file_kk ?? null, 'icon' => '👨‍👩‍👧‍👦'],
+                'KTP Orang Tua' => ['path' => $item->file_ktp ?? null, 'icon' => '🪪'],
+                'Foto Santri' => ['path' => $item->file_foto ?? null, 'icon' => '🧑'],
+                'Ijazah / SKL' => ['path' => $item->file_ijazah ?? null, 'icon' => '📄'],
             ];
         @endphp
 
@@ -1026,16 +1098,10 @@
                 <div class="berkas-head">
                     <div>
                         <h3>Berkas Pendaftaran</h3>
-                        <p>
-                            {{ $item->nama_lengkap ?? '-' }}
-                            · No. Daftar: {{ $item->no_daftar ?? '-' }}
-                            · Tahun: {{ $item->tahun_ajaran ?? '-' }}
-                        </p>
+                        <p>{{ $item->nama_lengkap ?? '-' }} · No. Daftar: {{ $item->no_daftar ?? '-' }}</p>
                     </div>
-
-                    <button type="button" class="berkas-close" onclick="closeBerkasModal('{{ $berkasModalId }}')">
-                        ×
-                    </button>
+                    <button type="button" class="berkas-close"
+                        onclick="closeBerkasModal('{{ $berkasModalId }}')">×</button>
                 </div>
 
                 <div class="berkas-body">
@@ -1043,61 +1109,38 @@
                         @foreach ($berkasList as $label => $berkas)
                             @php
                                 $path = $berkas['path'] ?? null;
-                                $field = $berkas['field'] ?? '';
-                                $routeBerkasAda =
-                                    $path && $field && \Illuminate\Support\Facades\Route::has('ppdb.berkas');
-                                $url = $routeBerkasAda
-                                    ? route('ppdb.berkas', ['id' => $item->id_daftar, 'field' => $field])
-                                    : $fileUrl($path);
-                                $downloadUrl = $routeBerkasAda
-                                    ? route('ppdb.berkas', [
-                                        'id' => $item->id_daftar,
-                                        'field' => $field,
-                                        'download' => 1,
-                                    ])
-                                    : $url;
-                                $icon = $berkas['icon'] ?? '📎';
+                                $url = $fileUrl($path);
+                                $icon = $berkas['icon'];
                             @endphp
 
                             <div class="berkas-card">
-                                <h4>
-                                    <span>{{ $icon }}</span>
-                                    <span>{{ $label }}</span>
-                                </h4>
+                                <h4><span>{{ $icon }}</span> <span>{{ $label }}</span></h4>
 
                                 <div class="berkas-preview">
                                     @if ($url && $isImageFile($path))
-                                        <img src="{{ $url }}" alt="{{ $label }}">
+                                        <img src="{{ $url }}" alt="{{ $label }}"
+                                            onerror="this.outerHTML='<div class=\'berkas-empty\' style=\'color:#ef476f;\'>⚠ File fisik terhapus/hilang di server</div>'">
                                     @elseif($url && $isPdfFile($path))
                                         <div>
                                             <div style="font-size:46px;margin-bottom:8px;">📄</div>
                                             <div>File PDF tersedia</div>
-                                            <small style="display:block;margin-top:6px;color:#94a3b8;">Klik tombol buka
-                                                untuk melihat dokumen.</small>
+                                            <small style="display:block;margin-top:6px;color:#94a3b8;">Silakan download
+                                                atau buka.</small>
                                         </div>
                                     @elseif($url)
                                         <div>
                                             <div style="font-size:46px;margin-bottom:8px;">📎</div>
                                             <div>File tersedia</div>
-                                            <small style="display:block;margin-top:6px;color:#94a3b8;">Klik tombol
-                                                buka/download.</small>
                                         </div>
                                     @else
-                                        <div class="berkas-empty">
-                                            Belum upload berkas
-                                        </div>
+                                        <div class="berkas-empty">Belum upload berkas</div>
                                     @endif
                                 </div>
 
                                 <div class="berkas-actions">
                                     @if ($url)
-                                        <a href="{{ $url }}" target="_blank" class="berkas-btn">
-                                            👁 Buka
-                                        </a>
-
-                                        <a href="{{ $downloadUrl }}" class="berkas-btn light">
-                                            ⬇ Download
-                                        </a>
+                                        <a href="{{ $url }}" target="_blank" class="berkas-btn">👁 Buka</a>
+                                        <a href="{{ $url }}" download class="berkas-btn light">⬇ Download</a>
                                     @else
                                         <span class="berkas-empty">Tidak ada file</span>
                                     @endif
@@ -1150,7 +1193,6 @@
                 event.target.classList.remove('show');
             }
 
-            // Close export menu when clicking outside
             const exportMenu = document.getElementById('exportMenu');
             const exportBtn = document.getElementById('exportBtn');
             if (exportMenu && event.target !== exportBtn && !event.target.closest('.export-menu') && !event.target

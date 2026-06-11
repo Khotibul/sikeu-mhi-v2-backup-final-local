@@ -15,10 +15,23 @@ class PpdbController extends Controller
 
     public function index(Request $request)
     {
-        $search = trim((string) $request->get('search'));
-        $tahunAjaran = $request->get('tahun_ajaran', 'semua');
-        $statusSeleksi = $request->get('status_seleksi', 'semua');
-        $unit = strtoupper(trim((string) $request->get('unit', 'semua')));
+        // =========================================================================
+        // JURUS BYPASS SERVER (Menangani Nginx cPanel yang membuang Query String)
+        // Jika parameter kosong tapi di URL aslinya ada tanda '?', kita ambil paksa!
+        // =========================================================================
+        if (empty($request->query()) && isset($_SERVER['REQUEST_URI'])) {
+            $rawQuery = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+            if (!empty($rawQuery)) {
+                parse_str($rawQuery, $parsedQuery);
+                $request->query->add($parsedQuery);
+                $request->merge($parsedQuery);
+            }
+        }
+
+        $search = trim((string) $request->input('search', ''));
+        $tahunAjaran = $request->input('tahun_ajaran', 'semua');
+        $statusSeleksi = $request->input('status_seleksi', 'semua');
+        $unit = strtoupper(trim((string) $request->input('unit', 'semua')));
 
         $query = DB::table($this->table);
 
@@ -46,7 +59,6 @@ class PpdbController extends Controller
         }
 
         if ($unit !== 'SEMUA' && $unit !== '') {
-            // Accept exact match or values that start with the selected unit (e.g. "SMP - A")
             $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
         }
 
@@ -163,12 +175,7 @@ class PpdbController extends Controller
             ->update($this->filterColumns($this->table, $validated));
 
         return redirect()
-            ->route('ppdb.index', [
-                'search' => $request->get('search'),
-                'tahun_ajaran' => $request->get('filter_tahun_ajaran'),
-                'status_seleksi' => $request->get('filter_status_seleksi'),
-                'unit' => $request->get('filter_unit'),
-            ])
+            ->route('ppdb.index')
             ->with('success', 'Data pendaftaran PPDB berhasil diperbarui.');
     }
 
@@ -206,6 +213,67 @@ class PpdbController extends Controller
         }
 
         return view('ppdb.cetak', compact('pendaftar'));
+    }
+
+    public function export(Request $request)
+    {
+        // =========================================================================
+        // BYPASS SERVER JUGA UNTUK FITUR EXPORT EXCEL AGAR DATA TERSARING BENAR
+        // =========================================================================
+        if (empty($request->query()) && isset($_SERVER['REQUEST_URI'])) {
+            $rawQuery = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+            if (!empty($rawQuery)) {
+                parse_str($rawQuery, $parsedQuery);
+                $request->query->add($parsedQuery);
+                $request->merge($parsedQuery);
+            }
+        }
+
+        $search = trim((string) $request->input('search', ''));
+        $tahunAjaran = $request->input('tahun_ajaran', 'semua');
+        $statusSeleksi = $request->input('status_seleksi', 'semua');
+        $unit = strtoupper(trim((string) $request->input('unit', 'semua')));
+        $format = strtolower($request->input('format', 'csv'));
+
+        $query = DB::table($this->table);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('no_daftar', 'like', '%' . $search . '%')
+                    ->orWhere('nama_lengkap', 'like', '%' . $search . '%')
+                    ->orWhere('nisn', 'like', '%' . $search . '%')
+                    ->orWhere('asal_sekolah', 'like', '%' . $search . '%')
+                    ->orWhere('nama_ayah', 'like', '%' . $search . '%')
+                    ->orWhere('nama_ibu', 'like', '%' . $search . '%')
+                    ->orWhere('no_hp_ortu', 'like', '%' . $search . '%')
+                    ->orWhere('jenjang_sekolah', 'like', '%' . $search . '%')
+                    ->orWhere('jurusan', 'like', '%' . $search . '%')
+                    ->orWhere('kelas_diniyah', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($tahunAjaran !== 'semua' && $tahunAjaran !== '') {
+            $query->where('tahun_ajaran', $tahunAjaran);
+        }
+
+        if ($statusSeleksi !== 'semua' && $statusSeleksi !== '') {
+            $query->where('status_seleksi', $statusSeleksi);
+        }
+
+        if ($unit !== 'SEMUA' && $unit !== '') {
+            $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
+        }
+
+        $data = $query
+            ->orderByDesc('tgl_daftar')
+            ->orderByDesc('id_daftar')
+            ->get();
+
+        if ($format === 'xlsx') {
+            return $this->exportExcel($data);
+        }
+
+        return $this->exportCsv($data);
     }
 
     public function terimaSantri($id)
@@ -287,55 +355,6 @@ class PpdbController extends Controller
         return response()->file($filePath);
     }
 
-    public function export(Request $request)
-    {
-        $search = trim((string) $request->get('search'));
-        $tahunAjaran = $request->get('tahun_ajaran', 'semua');
-        $statusSeleksi = $request->get('status_seleksi', 'semua');
-        $unit = strtoupper(trim((string) $request->get('unit', 'semua')));
-        $format = strtolower($request->get('format', 'csv')); // csv atau xlsx
-
-        $query = DB::table($this->table);
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('no_daftar', 'like', '%' . $search . '%')
-                    ->orWhere('nama_lengkap', 'like', '%' . $search . '%')
-                    ->orWhere('nisn', 'like', '%' . $search . '%')
-                    ->orWhere('asal_sekolah', 'like', '%' . $search . '%')
-                    ->orWhere('nama_ayah', 'like', '%' . $search . '%')
-                    ->orWhere('nama_ibu', 'like', '%' . $search . '%')
-                    ->orWhere('no_hp_ortu', 'like', '%' . $search . '%')
-                    ->orWhere('jenjang_sekolah', 'like', '%' . $search . '%')
-                    ->orWhere('jurusan', 'like', '%' . $search . '%')
-                    ->orWhere('kelas_diniyah', 'like', '%' . $search . '%');
-            });
-        }
-
-        if ($tahunAjaran !== 'semua' && $tahunAjaran !== '') {
-            $query->where('tahun_ajaran', $tahunAjaran);
-        }
-
-        if ($statusSeleksi !== 'semua' && $statusSeleksi !== '') {
-            $query->where('status_seleksi', $statusSeleksi);
-        }
-
-        if ($unit !== 'SEMUA' && $unit !== '') {
-            $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
-        }
-
-        $data = $query
-            ->orderByDesc('tgl_daftar')
-            ->orderByDesc('id_daftar')
-            ->get();
-
-        if ($format === 'xlsx') {
-            return $this->exportExcel($data);
-        }
-
-        return $this->exportCsv($data);
-    }
-
     private function exportCsv($data)
     {
         $filename = 'ppdb-' . now()->format('Ymd-His') . '.csv';
@@ -406,22 +425,15 @@ class PpdbController extends Controller
 
     private function exportExcel($data)
     {
-        // Jika library maatwebsite/excel terinstall, gunakan itu
-        // Untuk sekarang, export sebagai CSV dengan nama .xlsx
-        // Atau gunakan implementasi sederhana dengan PhpSpreadsheet jika tersedia
-
         $filename = 'ppdb-' . now()->format('Ymd-His') . '.xlsx';
 
-        // Try to use PhpOffice\PhpSpreadsheet if available
         try {
             if (class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
                 return $this->exportExcelWithPhpSpreadsheet($data, $filename);
             }
         } catch (\Throwable $e) {
-            // Fallback ke CSV
         }
 
-        // Fallback: export sebagai CSV
         return $this->exportCsvAsExcel($data, $filename);
     }
 
@@ -453,10 +465,8 @@ class PpdbController extends Controller
             'Tgl Daftar',
         ];
 
-        // Write headers
         $sheet->fromArray($headers, null, 'A1');
 
-        // Write data
         $rowNum = 2;
         foreach ($data as $index => $item) {
             $sheet->fromArray([
@@ -483,7 +493,6 @@ class PpdbController extends Controller
             $rowNum++;
         }
 
-        // Style headers
         $headerStyle = [
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '12A99A']],
@@ -491,7 +500,6 @@ class PpdbController extends Controller
         ];
         $sheet->getStyle('A1:S1')->applyFromArray($headerStyle);
 
-        // Auto width
         foreach (range('A', 'S') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
@@ -507,7 +515,6 @@ class PpdbController extends Controller
 
     private function exportCsvAsExcel($data, $filename)
     {
-        // Export CSV dengan UTF-8 BOM agar terbuka dengan baik di Excel
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -562,7 +569,6 @@ class PpdbController extends Controller
                     $item->tgl_daftar ?? '',
                 ]);
             }
-
             fclose($output);
         };
 
@@ -609,11 +615,6 @@ class PpdbController extends Controller
 
         if (($data['status_seleksi'] ?? '') === '') {
             $data['status_seleksi'] = 'Pending';
-        }
-
-        if (($data['jenjang_sekolah'] ?? '') !== 'SMK') {
-            // Jurusan hanya dipakai untuk SMK/MA. Data lama tetap aman di halaman admin,
-            // tetapi pendaftaran online SMK dibatasi di controller PPDB online.
         }
 
         return $data;
