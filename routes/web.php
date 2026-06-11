@@ -79,6 +79,11 @@ Route::middleware('admin.auth')->group(function () {
         ->middleware('role:dashboard')
         ->name('dashboard');
 
+    // Realtime JSON endpoint for dashboard (used by frontend to refresh data)
+    Route::get('/dashboard/data', [DashboardController::class, 'data'])
+        ->middleware('role:dashboard')
+        ->name('dashboard.data');
+
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
 

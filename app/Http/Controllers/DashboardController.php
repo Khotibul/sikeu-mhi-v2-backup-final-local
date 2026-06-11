@@ -8,8 +8,10 @@ use App\Models\DataKelasDiniyah;
 use App\Models\Pembayaran;
 use App\Models\PembayaranDiniyah;
 use App\Models\PembayaranPangkal;
+use App\Models\Pengeluaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DashboardController extends Controller
 {
@@ -22,10 +24,10 @@ class DashboardController extends Controller
         $totalSantri = Siswa::count();
 
         $santriAktif = Siswa::where(function ($query) {
-                $query->where('status_aktif', 'Aktif')
-                    ->orWhereNull('status_aktif')
-                    ->orWhere('status_aktif', '');
-            })
+            $query->where('status_aktif', 'Aktif')
+                ->orWhereNull('status_aktif')
+                ->orWhere('status_aktif', '');
+        })
             ->count();
 
         $totalKelasFormal = DataKelas::count();
@@ -47,13 +49,23 @@ class DashboardController extends Controller
             + $pemasukanPondokHariIni
             + $pemasukanLainSantriHariIni;
 
+        // Ambil Data Pengeluaran
+        $totalPengeluaranBulanIni = (int) Pengeluaran::whereBetween('tgl_keluar', [
+            $awalBulan->format('Y-m-d'),
+            $akhirBulan->format('Y-m-d'),
+        ])->sum('jumlah');
+
+        $totalPengeluaranHariIni = (int) Pengeluaran::where('tgl_keluar', $today->format('Y-m-d'))->sum('jumlah');
+
         $diagram = $this->buatDataDiagram([
-            'Formal' => $pemasukanFormalBulanIni,
-            'Pondok/Diniyah' => $pemasukanPondokBulanIni,
-            'Pembayaran Lain' => $pemasukanLainSantriBulanIni,
+            'SPP Formal' => $pemasukanFormalBulanIni,
+            'Syahriyah Pondok' => $pemasukanPondokBulanIni,
+            'Infaq/Lainnya' => $pemasukanLainSantriBulanIni,
         ]);
 
         $transaksiTerakhir = $this->ambilTransaksiTerakhir();
+        $prayerTimes = $this->fetchPrayerTimes();
+        $dailyAgenda = $this->dailyAgenda();
 
         return view('dashboard', compact(
             'totalSantri',
@@ -68,17 +80,99 @@ class DashboardController extends Controller
             'pemasukanPondokHariIni',
             'pemasukanLainSantriHariIni',
             'totalPemasukanHariIni',
+            'totalPengeluaranBulanIni',
+            'totalPengeluaranHariIni',
             'diagram',
-            'transaksiTerakhir'
+            'transaksiTerakhir',
+            'prayerTimes',
+            'dailyAgenda'
         ));
+    }
+
+    /**
+     * Return dashboard metrics as JSON for realtime frontend updates.
+     */
+    public function data()
+    {
+        $today = Carbon::today();
+        $awalBulan = Carbon::now()->startOfMonth();
+        $akhirBulan = Carbon::now()->endOfMonth();
+
+        $totalSantri = Siswa::count();
+
+        $santriAktif = Siswa::where(function ($query) {
+            $query->where('status_aktif', 'Aktif')
+                ->orWhereNull('status_aktif')
+                ->orWhere('status_aktif', '');
+        })
+            ->count();
+
+        $totalKelasFormal = DataKelas::count();
+        $totalKelasDiniyah = DataKelasDiniyah::count();
+
+        $pemasukanFormalBulanIni = $this->totalPembayaranFormal($awalBulan, $akhirBulan);
+        $pemasukanPondokBulanIni = $this->totalPembayaranDiniyah($awalBulan, $akhirBulan);
+        $pemasukanLainSantriBulanIni = $this->totalPembayaranLainSantri($awalBulan, $akhirBulan);
+
+        $totalPemasukanBulanIni = $pemasukanFormalBulanIni
+            + $pemasukanPondokBulanIni
+            + $pemasukanLainSantriBulanIni;
+
+        $pemasukanFormalHariIni = $this->totalPembayaranFormal($today, $today);
+        $pemasukanPondokHariIni = $this->totalPembayaranDiniyah($today, $today);
+        $pemasukanLainSantriHariIni = $this->totalPembayaranLainSantri($today, $today);
+
+        $totalPemasukanHariIni = $pemasukanFormalHariIni
+            + $pemasukanPondokHariIni
+            + $pemasukanLainSantriHariIni;
+
+        $totalPengeluaranBulanIni = (int) Pengeluaran::whereBetween('tgl_keluar', [
+            $awalBulan->format('Y-m-d'),
+            $akhirBulan->format('Y-m-d'),
+        ])->sum('jumlah');
+
+        $totalPengeluaranHariIni = (int) Pengeluaran::where('tgl_keluar', $today->format('Y-m-d'))->sum('jumlah');
+
+        $diagram = $this->buatDataDiagram([
+            'SPP Formal' => $pemasukanFormalBulanIni,
+            'Syahriyah Pondok' => $pemasukanPondokBulanIni,
+            'Infaq/Lainnya' => $pemasukanLainSantriBulanIni,
+        ]);
+
+        $transaksiTerakhir = $this->ambilTransaksiTerakhir();
+        $prayerTimes = $this->fetchPrayerTimes();
+        $dailyAgenda = $this->dailyAgenda();
+        $saldo = $totalPemasukanBulanIni - $totalPengeluaranBulanIni;
+        $saldoRatio = ($totalPemasukanBulanIni > 0)
+            ? round(($saldo / $totalPemasukanBulanIni) * 100, 1)
+            : 0;
+
+        return response()->json([
+            'totalSantri' => $totalSantri,
+            'santriAktif' => $santriAktif,
+            'totalKelasFormal' => $totalKelasFormal,
+            'totalKelasDiniyah' => $totalKelasDiniyah,
+            'totalKelas' => $totalKelasFormal + $totalKelasDiniyah,
+            'totalPemasukanBulanIni' => $totalPemasukanBulanIni,
+            'totalPemasukanHariIni' => $totalPemasukanHariIni,
+            'totalPengeluaranBulanIni' => $totalPengeluaranBulanIni,
+            'totalPengeluaranHariIni' => $totalPengeluaranHariIni,
+            'diagram' => $diagram,
+            'transaksiTerakhir' => $transaksiTerakhir,
+            'prayerTimes' => $prayerTimes,
+            'dailyAgenda' => $dailyAgenda,
+            'saldoBersih' => $saldo,
+            'saldoRatio' => $saldoRatio,
+            'isPositiveSaldo' => $saldo >= 0,
+        ]);
     }
 
     private function totalPembayaranFormal(Carbon $start, Carbon $end): int
     {
         return (int) Pembayaran::whereBetween('tgl_bayar', [
-                $start->format('Y-m-d'),
-                $end->format('Y-m-d'),
-            ])
+            $start->format('Y-m-d'),
+            $end->format('Y-m-d'),
+        ])
             ->get()
             ->sum(function ($item) {
                 return $this->ambilNominalLegacy($item);
@@ -88,9 +182,9 @@ class DashboardController extends Controller
     private function totalPembayaranDiniyah(Carbon $start, Carbon $end): int
     {
         return (int) PembayaranDiniyah::whereBetween('tgl_bayar', [
-                $start->format('Y-m-d'),
-                $end->format('Y-m-d'),
-            ])
+            $start->format('Y-m-d'),
+            $end->format('Y-m-d'),
+        ])
             ->get()
             ->sum(function ($item) {
                 return $this->ambilNominalLegacy($item);
@@ -100,9 +194,9 @@ class DashboardController extends Controller
     private function totalPembayaranLainSantri(Carbon $start, Carbon $end): int
     {
         return (int) PembayaranPangkal::whereBetween('tgl_bayar', [
-                $start->format('Y-m-d'),
-                $end->format('Y-m-d'),
-            ])
+            $start->format('Y-m-d'),
+            $end->format('Y-m-d'),
+        ])
             ->sum('nominal_bayar');
     }
 
@@ -119,7 +213,7 @@ class DashboardController extends Controller
                 'pembayaran.status_bayar',
                 'pembayaran.keterangan',
                 'siswa.nama_siswa',
-                DB::raw("'Biaya Pendidikan Formal' as jenis")
+                DB::raw("'SPP Pendidikan Formal' as jenis")
             )
             ->orderByDesc('pembayaran.tgl_bayar')
             ->orderByDesc('pembayaran.id_bayar')
@@ -146,7 +240,7 @@ class DashboardController extends Controller
                 'pembayaran_diniyah.terbayar',
                 'pembayaran_diniyah.keterangan',
                 'siswa.nama_siswa',
-                DB::raw("'Biaya Pendidikan Pondok/Diniyah' as jenis")
+                DB::raw("'Syahriyah Pondok/Diniyah' as jenis")
             )
             ->orderByDesc('pembayaran_diniyah.tgl_bayar')
             ->orderByDesc('pembayaran_diniyah.id_bayar_diniyah')
@@ -171,7 +265,7 @@ class DashboardController extends Controller
                 'pembayaran_pangkal.nominal_bayar',
                 'pembayaran_pangkal.keterangan',
                 'siswa.nama_siswa',
-                DB::raw("'Pembayaran Lain Santri' as jenis")
+                DB::raw("'Infaq / Pembayaran Lain' as jenis")
             )
             ->orderByDesc('pembayaran_pangkal.tgl_bayar')
             ->orderByDesc('pembayaran_pangkal.id_pangkal')
@@ -184,7 +278,7 @@ class DashboardController extends Controller
                     'jenis' => $item->jenis,
                     'periode' => $item->jenis_tagihan ?: '-',
                     'nominal' => (int) $item->nominal_bayar,
-                    'badge' => 'Lain',
+                    'badge' => 'Infaq',
                 ];
             });
 
@@ -219,6 +313,87 @@ class DashboardController extends Controller
         return 0;
     }
 
+    private function fetchPrayerTimes(): array
+    {
+        $city = env('PRAYER_CITY', 'Bangsalsari');
+        $country = env('PRAYER_COUNTRY', 'Indonesia');
+        $method = env('PRAYER_METHOD', 4);
+
+        try {
+            $response = Http::timeout(6)->get('https://api.aladhan.com/v1/timingsByCity', [
+                'city' => $city,
+                'country' => $country,
+                'method' => $method,
+                'school' => 1,
+            ]);
+
+            if ($response->ok() && isset($response['data']['timings'])) {
+                $timings = $response['data']['timings'];
+                $dateLabel = $response['data']['date']['gregorian']['date'] ?? Carbon::today()->format('d/m/Y');
+
+                return [
+                    'source' => 'Aladhan API',
+                    'city' => $city,
+                    'country' => $country,
+                    'date' => $dateLabel,
+                    'timings' => [
+                        'Fajr' => $timings['Fajr'] ?? '-',
+                        'Dhuhr' => $timings['Dhuhr'] ?? '-',
+                        'Asr' => $timings['Asr'] ?? '-',
+                        'Maghrib' => $timings['Maghrib'] ?? '-',
+                        'Isha' => $timings['Isha'] ?? '-',
+                        'Sunrise' => $timings['Sunrise'] ?? '-',
+                    ],
+                ];
+            }
+        } catch (\Throwable $e) {
+            // API gagal, gunakan fallback lokal sederhana.
+        }
+
+        return [
+            'source' => 'Fallback Lokal',
+            'city' => $city,
+            'country' => $country,
+            'date' => Carbon::today()->format('d/m/Y'),
+            'timings' => [
+                'Fajr' => '04:45',
+                'Dhuhr' => '11:55',
+                'Asr' => '15:10',
+                'Maghrib' => '17:45',
+                'Isha' => '19:05',
+                'Sunrise' => '05:55',
+            ],
+        ];
+    }
+
+    private function dailyAgenda(): array
+    {
+        $weekday = Carbon::today()->dayOfWeekIso;
+        $shared = [
+            ['time' => '05:00', 'title' => 'Bangun & Shalat Subuh berjamaah'],
+            ['time' => '06:30', 'title' => 'Kajian tauhid dan halaqah'],
+            ['time' => '09:00', 'title' => 'Belajar kitab & praktik pesantren'],
+            ['time' => '12:00', 'title' => 'Shalat Dzuhur & istirahat makan'],
+            ['time' => '14:30', 'title' => 'Pembinaan santri & kegiatan kelas'],
+            ['time' => '16:00', 'title' => 'Shalat Ashar berjamaah'],
+            ['time' => '18:00', 'title' => 'Shalat Maghrib & muhasabah harian'],
+            ['time' => '19:30', 'title' => 'Pengajian malam / tahfidz'],
+        ];
+
+        if ($weekday === 7) {
+            return [
+                ['time' => '06:00', 'title' => 'Shalat Subuh spontan dan mujahadah'],
+                ['time' => '08:00', 'title' => 'Kajian umum dan evaluasi pekanan'],
+                ['time' => '10:00', 'title' => 'Waktu bebas santri dan konseling'],
+                ['time' => '14:00', 'title' => 'Persiapan pekan berikutnya'],
+                ['time' => '16:30', 'title' => 'Shalat Ashar berjamaah'],
+                ['time' => '18:00', 'title' => 'Shalat Maghrib & doa bersama'],
+            ];
+        }
+
+        return $shared;
+    }
+
     private function buatDataDiagram(array $data): array
     {
         $total = array_sum($data);
@@ -239,9 +414,9 @@ class DashboardController extends Controller
         }
 
         $colors = [
-            'Formal' => '#12a99a',
-            'Pondok/Diniyah' => '#e3456d',
-            'Pembayaran Lain' => '#f59e0b',
+            'SPP Formal' => '#12a99a',
+            'Syahriyah Pondok' => '#e3456d',
+            'Infaq/Lainnya' => '#f59e0b',
         ];
 
         $items = [];
