@@ -1141,7 +1141,7 @@
             });
 
             document.addEventListener('submit', function(event) {
-                const form = event.target;
+                const form = event.target instanceof HTMLFormElement ? event.target : event.target.closest('form');
 
                 if (!form || form.dataset.mhiConfirmDone === '1') return;
 
@@ -1149,6 +1149,8 @@
                 const dataConfirm = form.getAttribute('data-confirm');
                 const message = dataConfirm || extractConfirmMessage(inlineConfirm);
 
+                // Only intercept forms with an explicit confirmation message.
+                // This avoids blocking normal GET filter or pagination actions.
                 if (!message) return;
 
                 event.preventDefault();

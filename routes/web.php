@@ -442,8 +442,12 @@ Route::middleware('admin.auth')->group(function () {
     Route::post('/ppdb/{id}/terima-santri', [PpdbController::class, 'terimaSantri'])
         ->middleware('role:ppdb.manage')
         ->name('ppdb.terima-santri');
-        
+
+    Route::get('/ppdb/export/data', [PpdbController::class, 'export'])
+        ->middleware('role:ppdb.view')
+        ->name('ppdb.export');
+
     Route::get('/ppdb/{id}/berkas/{field}', [PpdbController::class, 'berkas'])
-    ->middleware(['admin.auth', 'role:ppdb.view,ppdb.manage'])
-    ->name('ppdb.berkas');
+        ->middleware(['admin.auth', 'role:ppdb.view,ppdb.manage'])
+        ->name('ppdb.berkas');
 });

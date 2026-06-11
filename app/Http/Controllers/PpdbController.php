@@ -46,7 +46,8 @@ class PpdbController extends Controller
         }
 
         if ($unit !== 'SEMUA' && $unit !== '') {
-            $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) = ?', [$unit]);
+            // Accept exact match or values that start with the selected unit (e.g. "SMP - A")
+            $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
         }
 
         $ppdbs = $query
@@ -62,7 +63,7 @@ class PpdbController extends Controller
         }
 
         if ($unit !== 'SEMUA' && $unit !== '') {
-            $summaryQuery->whereRaw('UPPER(TRIM(jenjang_sekolah)) = ?', [$unit]);
+            $summaryQuery->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
         }
 
         $summaryRows = $summaryQuery->get();
@@ -80,6 +81,13 @@ class PpdbController extends Controller
             ->orderByDesc('tahun_ajaran')
             ->pluck('tahun_ajaran');
 
+        $unitOptions = [
+            'MTS' => 'MTs',
+            'SMP' => 'SMP',
+            'MA' => 'MA',
+            'SMK' => 'SMK',
+        ];
+
         return view('ppdb.index', compact(
             'ppdbs',
             'search',
@@ -87,6 +95,7 @@ class PpdbController extends Controller
             'statusSeleksi',
             'unit',
             'tahunAjaranList',
+            'unitOptions',
             'totalPendaftar',
             'totalPending',
             'totalDiterima',
@@ -276,6 +285,288 @@ class PpdbController extends Controller
         }
 
         return response()->file($filePath);
+    }
+
+    public function export(Request $request)
+    {
+        $search = trim((string) $request->get('search'));
+        $tahunAjaran = $request->get('tahun_ajaran', 'semua');
+        $statusSeleksi = $request->get('status_seleksi', 'semua');
+        $unit = strtoupper(trim((string) $request->get('unit', 'semua')));
+        $format = strtolower($request->get('format', 'csv')); // csv atau xlsx
+
+        $query = DB::table($this->table);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('no_daftar', 'like', '%' . $search . '%')
+                    ->orWhere('nama_lengkap', 'like', '%' . $search . '%')
+                    ->orWhere('nisn', 'like', '%' . $search . '%')
+                    ->orWhere('asal_sekolah', 'like', '%' . $search . '%')
+                    ->orWhere('nama_ayah', 'like', '%' . $search . '%')
+                    ->orWhere('nama_ibu', 'like', '%' . $search . '%')
+                    ->orWhere('no_hp_ortu', 'like', '%' . $search . '%')
+                    ->orWhere('jenjang_sekolah', 'like', '%' . $search . '%')
+                    ->orWhere('jurusan', 'like', '%' . $search . '%')
+                    ->orWhere('kelas_diniyah', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($tahunAjaran !== 'semua' && $tahunAjaran !== '') {
+            $query->where('tahun_ajaran', $tahunAjaran);
+        }
+
+        if ($statusSeleksi !== 'semua' && $statusSeleksi !== '') {
+            $query->where('status_seleksi', $statusSeleksi);
+        }
+
+        if ($unit !== 'SEMUA' && $unit !== '') {
+            $query->whereRaw('UPPER(TRIM(jenjang_sekolah)) LIKE ?', [$unit . '%']);
+        }
+
+        $data = $query
+            ->orderByDesc('tgl_daftar')
+            ->orderByDesc('id_daftar')
+            ->get();
+
+        if ($format === 'xlsx') {
+            return $this->exportExcel($data);
+        }
+
+        return $this->exportCsv($data);
+    }
+
+    private function exportCsv($data)
+    {
+        $filename = 'ppdb-' . now()->format('Ymd-His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($data) {
+            $output = fopen('php://output', 'w');
+
+            // Tambahkan BOM untuk UTF-8
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header
+            fputcsv($output, [
+                'No',
+                'No. Daftar',
+                'Nama Lengkap',
+                'NISN',
+                'JK',
+                'Tempat Lahir',
+                'Tgl Lahir',
+                'Alamat',
+                'Asal Sekolah',
+                'Nama Ayah',
+                'Nama Ibu',
+                'No HP Ortu',
+                'Jenjang Sekolah',
+                'Jurusan',
+                'Kelas Diniyah',
+                'Status Pondok',
+                'Status Seleksi',
+                'Tahun Ajaran',
+                'Tgl Daftar',
+            ]);
+
+            // Data
+            foreach ($data as $index => $item) {
+                fputcsv($output, [
+                    $index + 1,
+                    $item->no_daftar ?? '',
+                    $item->nama_lengkap ?? '',
+                    $item->nisn ?? '',
+                    $item->jk ?? '',
+                    $item->tempat_lahir ?? '',
+                    $item->tgl_lahir ?? '',
+                    $item->alamat ?? '',
+                    $item->asal_sekolah ?? '',
+                    $item->nama_ayah ?? '',
+                    $item->nama_ibu ?? '',
+                    $item->no_hp_ortu ?? '',
+                    $item->jenjang_sekolah ?? '',
+                    $item->jurusan ?? '',
+                    $item->kelas_diniyah ?? '',
+                    $item->status_pondok ?? '',
+                    $item->status_seleksi ?? '',
+                    $item->tahun_ajaran ?? '',
+                    $item->tgl_daftar ?? '',
+                ]);
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function exportExcel($data)
+    {
+        // Jika library maatwebsite/excel terinstall, gunakan itu
+        // Untuk sekarang, export sebagai CSV dengan nama .xlsx
+        // Atau gunakan implementasi sederhana dengan PhpSpreadsheet jika tersedia
+
+        $filename = 'ppdb-' . now()->format('Ymd-His') . '.xlsx';
+
+        // Try to use PhpOffice\PhpSpreadsheet if available
+        try {
+            if (class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
+                return $this->exportExcelWithPhpSpreadsheet($data, $filename);
+            }
+        } catch (\Throwable $e) {
+            // Fallback ke CSV
+        }
+
+        // Fallback: export sebagai CSV
+        return $this->exportCsvAsExcel($data, $filename);
+    }
+
+    private function exportExcelWithPhpSpreadsheet($data, $filename)
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Headers
+        $headers = [
+            'No',
+            'No. Daftar',
+            'Nama Lengkap',
+            'NISN',
+            'JK',
+            'Tempat Lahir',
+            'Tgl Lahir',
+            'Alamat',
+            'Asal Sekolah',
+            'Nama Ayah',
+            'Nama Ibu',
+            'No HP Ortu',
+            'Jenjang Sekolah',
+            'Jurusan',
+            'Kelas Diniyah',
+            'Status Pondok',
+            'Status Seleksi',
+            'Tahun Ajaran',
+            'Tgl Daftar',
+        ];
+
+        // Write headers
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Write data
+        $rowNum = 2;
+        foreach ($data as $index => $item) {
+            $sheet->fromArray([
+                $index + 1,
+                $item->no_daftar ?? '',
+                $item->nama_lengkap ?? '',
+                $item->nisn ?? '',
+                $item->jk ?? '',
+                $item->tempat_lahir ?? '',
+                $item->tgl_lahir ?? '',
+                $item->alamat ?? '',
+                $item->asal_sekolah ?? '',
+                $item->nama_ayah ?? '',
+                $item->nama_ibu ?? '',
+                $item->no_hp_ortu ?? '',
+                $item->jenjang_sekolah ?? '',
+                $item->jurusan ?? '',
+                $item->kelas_diniyah ?? '',
+                $item->status_pondok ?? '',
+                $item->status_seleksi ?? '',
+                $item->tahun_ajaran ?? '',
+                $item->tgl_daftar ?? '',
+            ], null, 'A' . $rowNum);
+            $rowNum++;
+        }
+
+        // Style headers
+        $headerStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '12A99A']],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+        ];
+        $sheet->getStyle('A1:S1')->applyFromArray($headerStyle);
+
+        // Auto width
+        foreach (range('A', 'S') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    private function exportCsvAsExcel($data, $filename)
+    {
+        // Export CSV dengan UTF-8 BOM agar terbuka dengan baik di Excel
+        $headers = [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($data) {
+            $output = fopen('php://output', 'w');
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($output, [
+                'No',
+                'No. Daftar',
+                'Nama Lengkap',
+                'NISN',
+                'JK',
+                'Tempat Lahir',
+                'Tgl Lahir',
+                'Alamat',
+                'Asal Sekolah',
+                'Nama Ayah',
+                'Nama Ibu',
+                'No HP Ortu',
+                'Jenjang Sekolah',
+                'Jurusan',
+                'Kelas Diniyah',
+                'Status Pondok',
+                'Status Seleksi',
+                'Tahun Ajaran',
+                'Tgl Daftar',
+            ]);
+
+            foreach ($data as $index => $item) {
+                fputcsv($output, [
+                    $index + 1,
+                    $item->no_daftar ?? '',
+                    $item->nama_lengkap ?? '',
+                    $item->nisn ?? '',
+                    $item->jk ?? '',
+                    $item->tempat_lahir ?? '',
+                    $item->tgl_lahir ?? '',
+                    $item->alamat ?? '',
+                    $item->asal_sekolah ?? '',
+                    $item->nama_ayah ?? '',
+                    $item->nama_ibu ?? '',
+                    $item->no_hp_ortu ?? '',
+                    $item->jenjang_sekolah ?? '',
+                    $item->jurusan ?? '',
+                    $item->kelas_diniyah ?? '',
+                    $item->status_pondok ?? '',
+                    $item->status_seleksi ?? '',
+                    $item->tahun_ajaran ?? '',
+                    $item->tgl_daftar ?? '',
+                ]);
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     private function validatePpdb(Request $request, $ignoreId = null): array

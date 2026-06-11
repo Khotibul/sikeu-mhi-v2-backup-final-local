@@ -14,7 +14,7 @@
             margin-bottom: 20px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden
+            overflow: hidden;
         }
 
         .ppdb-hero:after {
@@ -25,7 +25,7 @@
             border-radius: 999px;
             background: rgba(255, 255, 255, .14);
             right: -65px;
-            top: -80px
+            top: -80px;
         }
 
         .ppdb-hero h2 {
@@ -33,7 +33,7 @@
             font-size: 30px;
             font-weight: 950;
             position: relative;
-            z-index: 1
+            z-index: 1;
         }
 
         .ppdb-hero p {
@@ -41,14 +41,14 @@
             line-height: 1.7;
             font-weight: 700;
             position: relative;
-            z-index: 1
+            z-index: 1;
         }
 
         .ppdb-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
-            margin-bottom: 18px
+            margin-bottom: 18px;
         }
 
         .stat-card {
@@ -58,7 +58,7 @@
             padding: 18px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden
+            overflow: hidden;
         }
 
         .stat-card:after {
@@ -69,15 +69,15 @@
             border-radius: 999px;
             background: var(--tosca-soft);
             right: -30px;
-            top: -34px
+            top: -34px;
         }
 
         .stat-card.pink:after {
-            background: var(--pink-soft)
+            background: var(--pink-soft);
         }
 
         .stat-card.warn:after {
-            background: var(--warning-soft)
+            background: var(--warning-soft);
         }
 
         .stat-card span {
@@ -88,7 +88,7 @@
             text-transform: uppercase;
             margin-bottom: 8px;
             position: relative;
-            z-index: 1
+            z-index: 1;
         }
 
         .stat-card strong {
@@ -97,15 +97,15 @@
             font-size: 28px;
             font-weight: 950;
             position: relative;
-            z-index: 1
+            z-index: 1;
         }
 
         .stat-card.pink strong {
-            color: var(--pink-dark)
+            color: var(--pink-dark);
         }
 
         .stat-card.warn strong {
-            color: #b45309
+            color: #b45309;
         }
 
         .ppdb-panel {
@@ -115,7 +115,7 @@
             padding: 22px;
             box-shadow: var(--shadow-soft);
             position: relative;
-            overflow: hidden
+            overflow: hidden;
         }
 
         .ppdb-panel:after {
@@ -141,19 +141,19 @@
             grid-template-columns: 1fr auto;
             gap: 12px;
             align-items: end;
-            margin-bottom: 16px
+            margin-bottom: 16px;
         }
 
         .filter-ppdb {
             display: grid;
             grid-template-columns: 1.4fr .65fr .65fr .65fr auto auto;
             gap: 10px;
-            align-items: end
+            align-items: end;
         }
 
         .field {
             display: grid;
-            gap: 7px
+            gap: 7px;
         }
 
         .field label {
@@ -184,7 +184,7 @@
 
         .control:focus {
             border-color: var(--tosca);
-            box-shadow: 0 0 0 4px rgba(18, 169, 154, .1)
+            box-shadow: 0 0 0 4px rgba(18, 169, 154, .1);
         }
 
         .table-wrap {
@@ -217,10 +217,48 @@
             text-transform: uppercase
         }
 
+        /* Pagination tweaks: smaller, compact buttons for this view */
+        .pagination {
+            display: flex;
+            gap: 6px;
+            padding-left: 0;
+            margin: 12px 0 0;
+            list-style: none;
+        }
+
+        .pagination li {
+            display: inline-block;
+        }
+
+        .pagination li a,
+        .pagination li span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            min-width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--text);
+            border: 1px solid var(--border);
+            background: white;
+        }
+
+        .pagination li .active,
+        .pagination li a[aria-current="page"],
+        .pagination li span[aria-current="page"] {
+            background: var(--tosca);
+            color: #fff;
+            border-color: var(--tosca);
+        }
+
         .student {
             display: flex;
             gap: 11px;
-            align-items: center
+            align-items: center;
         }
 
         .avatar {
@@ -233,19 +271,19 @@
             justify-content: center;
             color: var(--tosca-dark);
             font-weight: 950;
-            flex: 0 0 auto
+            flex: 0 0 auto;
         }
 
         .student strong {
             display: block;
             text-transform: uppercase;
-            font-weight: 950
+            font-weight: 950;
         }
 
         .student small {
             color: var(--muted);
             font-weight: 800;
-            line-height: 1.5
+            line-height: 1.5;
         }
 
         .badge {
@@ -255,33 +293,33 @@
             font-size: 11px;
             font-weight: 950;
             text-transform: uppercase;
-            white-space: nowrap
+            white-space: nowrap;
         }
 
         .b-pending {
             background: var(--warning-soft);
-            color: #b45309
+            color: #b45309;
         }
 
         .b-diterima {
             background: var(--tosca-soft);
-            color: var(--tosca-dark)
+            color: var(--tosca-dark);
         }
 
         .b-ditolak {
             background: var(--pink-soft);
-            color: var(--pink-dark)
+            color: var(--pink-dark);
         }
 
         .b-soft {
             background: #f1f5f9;
-            color: #334155
+            color: #334155;
         }
 
         .aksi {
             display: flex;
             gap: 7px;
-            flex-wrap: wrap
+            flex-wrap: wrap;
         }
 
         .icon-btn {
@@ -294,27 +332,27 @@
             justify-content: center;
             text-decoration: none;
             cursor: pointer;
-            font-weight: 950
+            font-weight: 950;
         }
 
         .edit {
             background: #eefbf8;
-            color: var(--tosca-dark)
+            color: var(--tosca-dark);
         }
 
         .print {
             background: linear-gradient(135deg, var(--tosca), #087c73);
-            color: white !important
+            color: white !important;
         }
 
         .accept {
             background: linear-gradient(135deg, #22c55e, #15803d);
-            color: white
+            color: white;
         }
 
         .delete {
             background: linear-gradient(135deg, #ef476f, #e11d48);
-            color: white
+            color: white;
         }
 
         .modal-ppdb {
@@ -326,11 +364,11 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 18px
+            padding: 18px;
         }
 
         .modal-ppdb.show {
-            display: flex
+            display: flex;
         }
 
         .modal-box {
@@ -350,7 +388,7 @@
             border-radius: 28px 28px 0 0;
             display: flex;
             justify-content: space-between;
-            gap: 12px
+            gap: 12px;
         }
 
         .modal-head h3 {
@@ -371,7 +409,7 @@
             background: rgba(255, 255, 255, .22);
             color: white;
             font-size: 18px;
-            cursor: pointer
+            cursor: pointer;
         }
 
         .modal-body {
@@ -386,13 +424,13 @@
         .grid2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 14px
+            gap: 14px;
         }
 
         .grid3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 14px
+            gap: 14px;
         }
 
         .section-title {
@@ -432,11 +470,11 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 18px
+            padding: 18px;
         }
 
         .berkas-modal.show {
-            display: flex
+            display: flex;
         }
 
         .berkas-box {
@@ -458,7 +496,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px
+            gap: 14px;
         }
 
         .berkas-head h3 {
@@ -472,7 +510,7 @@
             font-size: 13px;
             opacity: .94;
             font-weight: 750;
-            line-height: 1.5
+            line-height: 1.5;
         }
 
         .berkas-close {
@@ -484,7 +522,7 @@
             color: white;
             font-size: 20px;
             font-weight: 950;
-            cursor: pointer
+            cursor: pointer;
         }
 
         .berkas-body {
@@ -494,7 +532,7 @@
         .berkas-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px
+            gap: 16px;
         }
 
         .berkas-card {
@@ -502,7 +540,7 @@
             border-radius: 22px;
             padding: 16px;
             background: #fbfffe;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, .04)
+            box-shadow: 0 10px 25px rgba(15, 23, 42, .04);
         }
 
         .berkas-card h4 {
@@ -512,7 +550,7 @@
             font-weight: 950;
             display: flex;
             align-items: center;
-            gap: 8px
+            gap: 8px;
         }
 
         .berkas-preview {
@@ -527,27 +565,27 @@
             overflow: hidden;
             color: #64748b;
             font-weight: 850;
-            text-align: center
+            text-align: center;
         }
 
         .berkas-preview img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background: white
+            background: white;
         }
 
         .berkas-empty {
             color: #94a3b8;
             font-weight: 850;
-            line-height: 1.6
+            line-height: 1.6;
         }
 
         .berkas-actions {
             margin-top: 12px;
             display: flex;
             gap: 8px;
-            flex-wrap: wrap
+            flex-wrap: wrap;
         }
 
         .berkas-btn {
@@ -561,13 +599,13 @@
             align-items: center;
             gap: 6px;
             background: linear-gradient(135deg, var(--tosca), #087c73);
-            color: #fff !important
+            color: #fff !important;
         }
 
         .berkas-btn.light {
             background: #f1f5f9;
             color: #334155 !important;
-            border: 1px solid var(--border)
+            border: 1px solid var(--border);
         }
 
         .berkas-count {
@@ -584,7 +622,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid white
+            border: 2px solid white;
         }
 
         @media(max-width:1000px) {
@@ -708,9 +746,11 @@
     <div class="ppdb-stats">
         <div class="stat-card"><span>Total Pendaftar</span><strong>{{ number_format($totalPendaftar, 0, ',', '.') }}</strong>
         </div>
-        <div class="stat-card warn"><span>Pending</span><strong>{{ number_format($totalPending, 0, ',', '.') }}</strong></div>
+        <div class="stat-card warn"><span>Pending</span><strong>{{ number_format($totalPending, 0, ',', '.') }}</strong>
+        </div>
         <div class="stat-card"><span>Diterima</span><strong>{{ number_format($totalDiterima, 0, ',', '.') }}</strong></div>
-        <div class="stat-card pink"><span>Ditolak</span><strong>{{ number_format($totalDitolak, 0, ',', '.') }}</strong></div>
+        <div class="stat-card pink"><span>Ditolak</span><strong>{{ number_format($totalDitolak, 0, ',', '.') }}</strong>
+        </div>
     </div>
 
     <div class="ppdb-panel">
@@ -735,9 +775,11 @@
                     <div class="field">
                         <label>Unit / Jenjang</label>
                         <select name="unit" class="control">
-                            <option value="semua" {{ ($unit ?? 'SEMUA') === 'SEMUA' || ($unit ?? 'semua') === 'semua' ? 'selected' : '' }}>Semua</option>
-                            @foreach(($unitOptions ?? ['MTS' => 'MTs', 'SMP' => 'SMP', 'MA' => 'MA', 'SMK' => 'SMK']) as $unitValue => $unitLabel)
-                                <option value="{{ $unitValue }}" {{ ($unit ?? '') == $unitValue ? 'selected' : '' }}>
+                            <option value="semua"
+                                {{ strtoupper($unit ?? 'SEMUA') === 'SEMUA' ? 'selected' : '' }}>
+                                Semua</option>
+                            @foreach ($unitOptions ?? ['MTS' => 'MTs', 'SMP' => 'SMP', 'MA' => 'MA', 'SMK' => 'SMK'] as $unitValue => $unitLabel)
+                                <option value="{{ $unitValue }}" {{ strtoupper($unit ?? '') === $unitValue ? 'selected' : '' }}>
                                     {{ $unitLabel }}
                                 </option>
                             @endforeach
@@ -757,8 +799,25 @@
                     <a href="{{ route('ppdb.index') }}" class="btn btn-light">Reset</a>
                 </form>
 
-                <button type="button" class="btn btn-primary" onclick="openPpdbModal('modalTambahPpdb')">+ Tambah
-                    Pendaftar</button>
+                <div style="display:flex; gap:10px;">
+                    <div style="position:relative; display:inline-block;">
+                        <button type="button" class="btn btn-primary" id="exportBtn" onclick="toggleExportMenu()">📊
+                            Export</button>
+                        <div class="export-menu" id="exportMenu"
+                            style="position:absolute; right:0; top:100%; margin-top:8px; background:white; border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 25px rgba(15,23,42,.12); min-width:160px; z-index:100; display:none;">
+                            <a href="{{ route('ppdb.export', ['search' => $search, 'tahun_ajaran' => $tahunAjaran, 'status_seleksi' => $statusSeleksi, 'unit' => $unit, 'format' => 'csv']) }}"
+                                style="display:block; padding:12px 16px; text-decoration:none; color:var(--text); border-bottom:1px solid var(--border); font-weight:800;"
+                                onmouseover="this.style.background='#f5f5f5'"
+                                onmouseout="this.style.background='transparent'">📄 Download CSV</a>
+                            <a href="{{ route('ppdb.export', ['search' => $search, 'tahun_ajaran' => $tahunAjaran, 'status_seleksi' => $statusSeleksi, 'unit' => $unit, 'format' => 'xlsx']) }}"
+                                style="display:block; padding:12px 16px; text-decoration:none; color:var(--text); font-weight:800;"
+                                onmouseover="this.style.background='#f5f5f5'"
+                                onmouseout="this.style.background='transparent'">📊 Download Excel</a>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="openPpdbModal('modalTambahPpdb')">+ Tambah
+                        Pendaftar</button>
+                </div>
             </div>
 
             <div class="table-wrap">
@@ -871,7 +930,7 @@
             </div>
 
             @if (method_exists($ppdbs, 'links'))
-                <div style="margin-top:16px;">{{ $ppdbs->links() }}</div>
+                <div style="margin-top:16px;">{{ $ppdbs->appends(request()->except('page'))->links() }}</div>
             @endif
         </div>
     </div>
@@ -912,7 +971,8 @@
                         <h3>Edit Data PPDB</h3>
                         <p>Perbarui data pendaftar {{ $item->nama_lengkap }}.</p>
                     </div>
-                    <button type="button" class="modal-close" onclick="closePpdbModal('{{ $modalId }}')">×</button>
+                    <button type="button" class="modal-close"
+                        onclick="closePpdbModal('{{ $modalId }}')">×</button>
                 </div>
 
                 <div class="modal-body">
@@ -984,12 +1044,17 @@
                             @php
                                 $path = $berkas['path'] ?? null;
                                 $field = $berkas['field'] ?? '';
-                                $routeBerkasAda = $path && $field && \Illuminate\Support\Facades\Route::has('ppdb.berkas');
+                                $routeBerkasAda =
+                                    $path && $field && \Illuminate\Support\Facades\Route::has('ppdb.berkas');
                                 $url = $routeBerkasAda
                                     ? route('ppdb.berkas', ['id' => $item->id_daftar, 'field' => $field])
                                     : $fileUrl($path);
                                 $downloadUrl = $routeBerkasAda
-                                    ? route('ppdb.berkas', ['id' => $item->id_daftar, 'field' => $field, 'download' => 1])
+                                    ? route('ppdb.berkas', [
+                                        'id' => $item->id_daftar,
+                                        'field' => $field,
+                                        'download' => 1,
+                                    ])
                                     : $url;
                                 $icon = $berkas['icon'] ?? '📎';
                             @endphp
@@ -1073,9 +1138,24 @@
             if (modal) modal.classList.remove('show');
         }
 
+        function toggleExportMenu() {
+            const menu = document.getElementById('exportMenu');
+            if (menu) {
+                menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal-ppdb') || event.target.classList.contains('berkas-modal')) {
                 event.target.classList.remove('show');
+            }
+
+            // Close export menu when clicking outside
+            const exportMenu = document.getElementById('exportMenu');
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportMenu && event.target !== exportBtn && !event.target.closest('.export-menu') && !event.target
+                .closest('#exportBtn')) {
+                exportMenu.style.display = 'none';
             }
         });
 
@@ -1084,6 +1164,10 @@
                 document.querySelectorAll('.modal-ppdb.show, .berkas-modal.show').forEach(function(modal) {
                     modal.classList.remove('show');
                 });
+                const exportMenu = document.getElementById('exportMenu');
+                if (exportMenu) {
+                    exportMenu.style.display = 'none';
+                }
             }
         });
     </script>
