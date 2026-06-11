@@ -2,25 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PpdbEmailVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class PpdbOnlineController extends Controller
 {
+    public function __construct(private readonly PpdbEmailVerificationService $emailVerification)
+    {
+    }
+
     public function form()
     {
         $tahunAjaran = $this->tahunAjaranAktif();
         $kelasDiniyahList = $this->ambilKelasDiniyahPpdb();
+        $verifiedEmail = $this->emailVerification->verifiedEmailFromSession();
 
         return view('ppdb-online.form', compact(
             'tahunAjaran',
-            'kelasDiniyahList'
+            'kelasDiniyahList',
+            'verifiedEmail'
         ));
     }
 
@@ -28,6 +34,21 @@ class PpdbOnlineController extends Controller
     {
         @ini_set('memory_limit', '512M');
         @set_time_limit(180);
+
+        $verifiedEmail = $this->emailVerification->verifiedEmailFromSession();
+
+        $request->validate([
+            'verified_email' => 'required|email:rfc|max:190',
+        ], [
+            'verified_email.required' => 'Email harus diverifikasi terlebih dahulu sebelum mengirim formulir.',
+            'verified_email.email' => 'Email terverifikasi tidak valid.',
+        ]);
+
+        if (!$verifiedEmail || !hash_equals($verifiedEmail, $this->emailVerification->normalizeEmail($request->input('verified_email')))) {
+            return back()
+                ->withInput()
+                ->with('error', 'Formulir terkunci. Silakan verifikasi email terlebih dahulu.');
+        }
 
         $request->validate([
             'ppdb_submit_token' => 'nullable|string|max:150',
@@ -94,6 +115,7 @@ class PpdbOnlineController extends Controller
             strtolower(trim((string) $request->nama_lengkap)),
             strtolower(trim((string) $request->nama_ayah)),
             strtolower(trim((string) $request->nama_ibu)),
+            $verifiedEmail,
             preg_replace('/\D+/', '', (string) $request->no_hp_ortu),
             (string) $request->tgl_lahir,
             (string) $request->jk,
@@ -129,7 +151,7 @@ class PpdbOnlineController extends Controller
         $uploadedFiles = [];
 
         try {
-            $id = DB::transaction(function () use ($request, $tahunAjaran, $statusPondok, $kelasDiniyah, &$uploadedFiles) {
+            $id = DB::transaction(function () use ($request, $tahunAjaran, $statusPondok, $kelasDiniyah, $verifiedEmail, &$uploadedFiles) {
                 $existing = $this->findExistingPendaftar($request, $tahunAjaran);
 
                 if ($existing) {
@@ -149,6 +171,7 @@ class PpdbOnlineController extends Controller
                     'tgl_lahir' => $request->tgl_lahir,
                     'alamat' => $request->alamat,
                     'asal_sekolah' => $request->asal_sekolah,
+                    'email' => $verifiedEmail,
 
                     'nama_ayah' => $request->nama_ayah,
                     'nama_ibu' => $request->nama_ibu,

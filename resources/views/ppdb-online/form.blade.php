@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -10,612 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-
-    <style>
-        :root {
-            --tosca: #0f9f92;
-            --tosca-dark: #0f766e;
-            --tosca-soft: #e7faf7;
-            --pink: #e3456d;
-            --pink-dark: #be185d;
-            --pink-soft: #ffe7ee;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --bg: #f4f8fb;
-            --white: #ffffff;
-            --shadow: 0 20px 50px rgba(15, 23, 42, .10);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            min-height: 100%;
-            font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(15, 159, 146, .14), transparent 34%),
-                radial-gradient(circle at top right, rgba(227, 69, 109, .12), transparent 32%),
-                var(--bg);
-            color: var(--text);
-        }
-
-        body,
-        input,
-        select,
-        textarea,
-        button {
-            font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
-        }
-
-        .hero {
-            min-height: 330px;
-            background:
-                linear-gradient(135deg, rgba(15, 118, 110, .96), rgba(15, 159, 146, .92)),
-                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, .20), transparent 28%),
-                radial-gradient(circle at 82% 8%, rgba(255, 255, 255, .16), transparent 22%);
-            color: white;
-            padding: 34px 18px 96px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom-left-radius: 38px;
-            border-bottom-right-radius: 38px;
-        }
-
-        .hero::before,
-        .hero::after {
-            content: "";
-            position: absolute;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .12);
-        }
-
-        .hero::before {
-            width: 260px;
-            height: 260px;
-            left: -95px;
-            top: -95px;
-        }
-
-        .hero::after {
-            width: 230px;
-            height: 230px;
-            right: -78px;
-            bottom: -86px;
-        }
-
-        .hero-inner {
-            max-width: 960px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .ppdb-logo-wrap {
-            width: 88px;
-            height: 88px;
-            margin: 0 auto 16px;
-            border-radius: 28px;
-            background: rgba(255, 255, 255, .95);
-            border: 1px solid rgba(255, 255, 255, .65);
-            box-shadow: 0 18px 38px rgba(0, 0, 0, .17);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-        }
-
-        .ppdb-logo-wrap img {
-            width: 68px;
-            height: 68px;
-            object-fit: contain;
-            display: block;
-            background: transparent !important;
-        }
-
-        .yayasan-name {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: .09em;
-            text-transform: uppercase;
-            opacity: .96;
-        }
-
-        .pesantren-name {
-            margin: 6px 0 0;
-            font-size: 22px;
-            line-height: 1.18;
-            font-weight: 950;
-            text-transform: uppercase;
-            letter-spacing: .02em;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .18);
-            border: 1px solid rgba(255, 255, 255, .22);
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .hero-title {
-            margin: 16px 0 10px;
-            font-size: 36px;
-            line-height: 1.12;
-            font-weight: 950;
-            letter-spacing: -.04em;
-        }
-
-        .hero-subtitle {
-            max-width: 760px;
-            margin: 0 auto;
-            font-size: 14px;
-            line-height: 1.8;
-            opacity: .94;
-            font-weight: 500;
-        }
-
-        .form-shell {
-            width: min(1040px, calc(100% - 32px));
-            margin: -70px auto 32px;
-            position: relative;
-            z-index: 3;
-        }
-
-        .notice {
-            border-radius: 22px;
-            padding: 15px 17px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            line-height: 1.6;
-            font-weight: 700;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, .06);
-        }
-
-        .notice-danger {
-            background: #fff1f4;
-            color: #9f1239;
-            border: 1px solid #fecdd3;
-        }
-
-        .notice-info {
-            background: #ecfeff;
-            color: #0f766e;
-            border: 1px solid rgba(15, 118, 110, .18);
-        }
-
-        .form-card {
-            background: rgba(255, 255, 255, .96);
-            border: 1px solid rgba(226, 232, 240, .92);
-            border-radius: 32px;
-            padding: 22px;
-            box-shadow: var(--shadow);
-        }
-
-        .section-card {
-            border: 1px solid var(--border);
-            background: #ffffff;
-            border-radius: 26px;
-            padding: 20px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-card::after {
-            content: "";
-            position: absolute;
-            width: 130px;
-            height: 130px;
-            border-radius: 999px;
-            right: -52px;
-            top: -60px;
-            background: var(--tosca-soft);
-            opacity: .70;
-            pointer-events: none;
-        }
-
-        .section-head {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .section-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, var(--tosca-soft), var(--pink-soft));
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 19px;
-            flex: 0 0 auto;
-        }
-
-        .section-title {
-            margin: 0;
-            color: var(--tosca-dark);
-            font-size: 17px;
-            font-weight: 950;
-        }
-
-        .section-desc {
-            margin: 4px 0 0;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.55;
-            font-weight: 600;
-        }
-
-        .grid-2,
-        .grid-3,
-        .upload-grid {
-            display: grid;
-            gap: 14px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .upload-grid {
-            grid-template-columns: repeat(4, 1fr);
-        }
-
-        .field {
-            display: grid;
-            gap: 7px;
-        }
-
-        label {
-            color: #334155;
-            font-size: 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: .035em;
-        }
-
-        .required {
-            color: var(--pink);
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            min-height: 48px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 12px 14px;
-            color: var(--text);
-            background: #ffffff;
-            font-size: 15px;
-            font-weight: 600;
-            outline: none;
-            transition: .15s ease;
-        }
-
-        textarea {
-            min-height: 112px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--tosca);
-            box-shadow: 0 0 0 4px rgba(15, 159, 146, .12);
-        }
-
-        .field-hint {
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.55;
-            font-weight: 600;
-        }
-
-        .choice-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .choice-card {
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 14px;
-            background: #ffffff;
-            cursor: pointer;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .choice-card input {
-            width: auto;
-            min-height: auto;
-            margin-top: 3px;
-        }
-
-        .choice-card strong {
-            display: block;
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 900;
-        }
-
-        .choice-card span {
-            display: block;
-            margin-top: 3px;
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.55;
-            font-weight: 600;
-        }
-
-        .upload-box {
-            min-height: 112px;
-            border: 1px dashed #b6c7d3;
-            background: #fbfdff;
-            border-radius: 20px;
-            padding: 14px;
-            cursor: pointer;
-            display: grid;
-            gap: 8px;
-            align-content: center;
-        }
-
-        .upload-box input {
-            min-height: auto;
-            padding: 0;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            font-size: 12px;
-        }
-
-        .upload-title {
-            color: var(--tosca-dark);
-            font-size: 13px;
-            font-weight: 950;
-        }
-
-        .upload-note {
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.55;
-            font-weight: 600;
-        }
-
-        .submit-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-top: 18px;
-        }
-
-        .submit-note {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.7;
-            font-weight: 600;
-            max-width: 640px;
-        }
-
-        .submit-btn {
-            border: none;
-            border-radius: 18px;
-            min-height: 54px;
-            padding: 0 24px;
-            background: linear-gradient(135deg, var(--tosca), var(--pink));
-            color: white;
-            font-size: 14px;
-            font-weight: 950;
-            cursor: pointer;
-            box-shadow: 0 15px 28px rgba(15, 118, 110, .22);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-        }
-
-        .submit-btn:disabled {
-            opacity: .75;
-            cursor: wait;
-        }
-
-        .footer-note {
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.7;
-            padding: 0 18px 32px;
-            font-weight: 600;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, .58);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            padding: 20px;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .loading-box {
-            width: 360px;
-            max-width: 100%;
-            border-radius: 28px;
-            background: #ffffff;
-            padding: 28px;
-            text-align: center;
-            box-shadow: 0 28px 80px rgba(15, 23, 42, .24);
-        }
-
-        .spinner {
-            width: 52px;
-            height: 52px;
-            border-radius: 999px;
-            border: 5px solid #dffaf6;
-            border-top-color: var(--tosca);
-            margin: 0 auto 16px;
-            animation: spin .85s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-box h3 {
-            margin: 0 0 8px;
-            color: var(--tosca-dark);
-            font-size: 20px;
-            font-weight: 950;
-        }
-
-        .loading-box p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.7;
-            font-weight: 600;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        @media (max-width: 900px) {
-            .hero {
-                min-height: 310px;
-                padding: 28px 16px 92px;
-                border-bottom-left-radius: 28px;
-                border-bottom-right-radius: 28px;
-            }
-
-            .ppdb-logo-wrap {
-                width: 76px;
-                height: 76px;
-                border-radius: 24px;
-            }
-
-            .ppdb-logo-wrap img {
-                width: 58px;
-                height: 58px;
-            }
-
-            .yayasan-name {
-                font-size: 12px;
-                letter-spacing: .06em;
-            }
-
-            .pesantren-name {
-                font-size: 17px;
-            }
-
-            .hero-title {
-                font-size: 28px;
-            }
-
-            .hero-subtitle {
-                font-size: 13px;
-            }
-
-            .form-shell {
-                width: calc(100% - 22px);
-                margin-top: -70px;
-            }
-
-            .form-card {
-                border-radius: 26px;
-                padding: 14px;
-            }
-
-            .section-card {
-                border-radius: 22px;
-                padding: 16px;
-            }
-
-            .grid-2,
-            .grid-3,
-            .upload-grid,
-            .choice-group {
-                grid-template-columns: 1fr;
-            }
-
-            input,
-            select,
-            textarea {
-                font-size: 16px;
-            }
-
-            .submit-area {
-                display: grid;
-                grid-template-columns: 1fr;
-            }
-
-            .submit-btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 420px) {
-            .hero-title {
-                font-size: 24px;
-            }
-
-            .section-head {
-                gap: 10px;
-            }
-
-            .section-icon {
-                width: 38px;
-                height: 38px;
-                border-radius: 14px;
-            }
-
-            .section-title {
-                font-size: 15px;
-            }
-        }
-    </style>
+    @vite(['resources/css/ppdb-online/form.css', 'resources/js/ppdb-online/form.js'])
 </head>
 
 <body>
@@ -631,6 +26,9 @@
 
         $defaultKelasDiniyah = $kelasDiniyahList->first() ?: 'IBTIDAIYAH INDUK PA';
         $oldDiniyah = old('kelas_diniyah', $defaultKelasDiniyah);
+        $verifiedEmail = $verifiedEmail ?? null;
+        $isEmailVerified = !empty($verifiedEmail);
+        $verificationEmail = old('email', session('verification_email', $verifiedEmail));
     @endphp
 
     <div class="hero">
@@ -662,6 +60,12 @@
             </div>
         @endif
 
+        @if (session('success'))
+            <div class="notice notice-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="notice notice-danger">
                 <strong>Mohon periksa kembali data berikut:</strong>
@@ -672,6 +76,59 @@
                 </ul>
             </div>
         @endif
+
+        <section class="verification-card {{ $isEmailVerified ? 'verified' : '' }}">
+            <div class="section-head">
+                <div class="section-icon">@</div>
+                <div>
+                    <h3 class="section-title">Verifikasi Email</h3>
+                    <p class="section-desc">
+                        Formulir PPDB akan terbuka setelah email wali santri berhasil diverifikasi.
+                    </p>
+                </div>
+            </div>
+
+            @if ($isEmailVerified)
+                <div class="notice notice-success" style="margin:0;">
+                    Email <strong>{{ $verifiedEmail }}</strong> sudah terverifikasi. Silakan lanjut mengisi formulir.
+                </div>
+            @else
+                <form action="{{ route('ppdb-online.email-verification.send') }}" method="POST">
+                    @csrf
+                    <div class="verification-actions">
+                        <div class="field">
+                            <label>Email Wali / Pendaftar <span class="required">*</span></label>
+                            <input type="email" name="email" value="{{ $verificationEmail }}"
+                                placeholder="nama@email.com" required>
+                            <div class="field-hint">
+                                Pastikan email aktif karena kode verifikasi akan dikirim ke alamat ini.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="verify-btn">
+                            Kirim Kode
+                        </button>
+                    </div>
+                </form>
+
+                <form action="{{ route('ppdb-online.email-verification.confirm') }}" method="POST">
+                    @csrf
+                    <div class="verification-code-row">
+                        <input type="hidden" name="email" value="{{ $verificationEmail }}">
+
+                        <div class="field">
+                            <label>Kode Verifikasi</label>
+                            <input type="text" name="verification_code" inputmode="numeric" pattern="[0-9]{6}"
+                                maxlength="6" placeholder="6 digit kode email">
+                        </div>
+
+                        <button type="submit" class="verify-btn secondary">
+                            Verifikasi
+                        </button>
+                    </div>
+                </form>
+            @endif
+        </section>
 
         <div class="notice notice-info">
             Berkas foto JPG/PNG/WEBP boleh berukuran besar dan akan dikompres otomatis maksimal sekitar 2 MB.
@@ -688,6 +145,15 @@
             <input type="hidden" name="ppdb_submit_token" value="{{ $ppdbSubmitToken }}">
 
             <input type="hidden" name="tahun_ajaran" value="{{ old('tahun_ajaran', $tahunAjaran) }}">
+            <input type="hidden" name="verified_email" value="{{ $verifiedEmail }}">
+
+            @unless ($isEmailVerified)
+                <div class="lock-message">
+                    Formulir masih terkunci. Masukkan email aktif, kirim kode, lalu verifikasi email terlebih dahulu.
+                </div>
+            @endunless
+
+            <fieldset class="{{ $isEmailVerified ? '' : 'form-locked' }}" {{ $isEmailVerified ? '' : 'disabled' }}>
 
             <section class="section-card">
                 <div class="section-head">
@@ -785,7 +251,7 @@
                 <div class="grid-2">
                     <div class="field">
                         <label>Jenjang Sekolah <span class="required">*</span></label>
-                        <select name="jenjang_sekolah" id="jenjangSekolah" required>
+                        <select name="jenjang_sekolah" id="jenjangSekolah" required data-old-jurusan="{{ $oldJenjang }}">
                             <option value="">-- Pilih Jenjang --</option>
                             <option value="MTS" {{ $oldJenjang == 'MTS' ? 'selected' : '' }}>MTS</option>
                             <option value="SMP" {{ $oldJenjang == 'SMP' ? 'selected' : '' }}>SMP</option>
@@ -832,7 +298,7 @@
                 <div class="grid-2" style="margin-top:14px;">
                     <div class="field" id="kelasDiniyahWrap">
                         <label>Kelas Diniyah</label>
-                        <select name="kelas_diniyah" id="kelasDiniyah">
+                        <select name="kelas_diniyah" id="kelasDiniyah" data-default-kelas="{{ $defaultKelasDiniyah }}">
                             <option value="">-- Pilih Kelas Diniyah --</option>
 
                             @foreach ($kelasDiniyahList as $namaKelasDiniyah)
@@ -887,15 +353,21 @@
                 </div>
             </section>
 
+            </fieldset>
+
             <div class="submit-area">
                 <div class="submit-note">
-                    Dengan mengirim formulir ini, wali santri menyatakan bahwa data yang diisi adalah benar dan siap
-                    diverifikasi oleh panitia PPDB.
+                    @if ($isEmailVerified)
+                        Dengan mengirim formulir ini, wali santri menyatakan bahwa data yang diisi adalah benar dan siap
+                        diverifikasi oleh panitia PPDB.
+                    @else
+                        Tombol kirim akan aktif setelah email berhasil diverifikasi.
+                    @endif
                 </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
+                <button type="submit" class="submit-btn" id="submitBtn" {{ $isEmailVerified ? '' : 'disabled' }}>
                     <span id="submitIcon">✈️</span>
-                    <span id="submitText">Kirim Formulir Pendaftaran</span>
+                    <span id="submitText">{{ $isEmailVerified ? 'Kirim Formulir Pendaftaran' : 'Verifikasi Email Dulu' }}</span>
                 </button>
             </div>
         </form>
@@ -916,126 +388,7 @@
             </p>
         </div>
     </div>
-
-    <script>
-        const jenjangSekolah = document.getElementById('jenjangSekolah');
-        const jurusanWrap = document.getElementById('jurusanWrap');
-        const jurusanSelect = document.getElementById('jurusanSelect');
-        const kelasDiniyah = document.getElementById('kelasDiniyah');
-        const kelasDiniyahWrap = document.getElementById('kelasDiniyahWrap');
-        const form = document.getElementById('ppdbOnlineForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const submitBtn = document.getElementById('submitBtn');
-        const submitText = document.getElementById('submitText');
-        const submitIcon = document.getElementById('submitIcon');
-
-        const oldJurusan = @json($oldJurusan);
-        const defaultKelasDiniyah = @json($defaultKelasDiniyah);
-
-        const jurusanOptions = {
-            SMK: [
-                'TKJ',
-                'AK',
-                'BDP'
-            ],
-            MA: [
-                'IPA',
-                'IPS',
-                'Keagamaan',
-                'Lainnya'
-            ]
-        };
-
-        function renderJurusan() {
-            const jenjang = jenjangSekolah.value;
-
-            jurusanSelect.innerHTML = '<option value="">-- Pilih Jurusan --</option>';
-
-            if (jenjang === 'SMK' || jenjang === 'MA') {
-                jurusanWrap.classList.remove('hidden');
-                jurusanSelect.required = true;
-
-                jurusanOptions[jenjang].forEach(function(item) {
-                    const option = document.createElement('option');
-                    option.value = item;
-                    option.textContent = item;
-
-                    if (oldJurusan === item) {
-                        option.selected = true;
-                    }
-
-                    jurusanSelect.appendChild(option);
-                });
-            } else {
-                jurusanWrap.classList.add('hidden');
-                jurusanSelect.required = false;
-                jurusanSelect.value = '';
-            }
-        }
-
-        function updateDiniyah() {
-            const status = document.querySelector('input[name="status_pondok"]:checked')?.value || 'Mukim';
-
-            if (status === 'Pulang Pergi') {
-                kelasDiniyah.value = '';
-                kelasDiniyah.disabled = true;
-                kelasDiniyah.required = false;
-                kelasDiniyahWrap.style.opacity = '.55';
-            } else {
-                kelasDiniyah.disabled = false;
-                kelasDiniyah.required = true;
-                kelasDiniyahWrap.style.opacity = '1';
-
-                if (!kelasDiniyah.value) {
-                    kelasDiniyah.value = defaultKelasDiniyah;
-                }
-            }
-        }
-
-        if (jenjangSekolah) {
-            jenjangSekolah.addEventListener('change', renderJurusan);
-            renderJurusan();
-        }
-
-        document.querySelectorAll('input[name="status_pondok"]').forEach(function(item) {
-            item.addEventListener('change', updateDiniyah);
-        });
-
-        updateDiniyah();
-
-        let ppdbIsSubmitting = false;
-
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (!form.checkValidity()) {
-                    return;
-                }
-
-                if (ppdbIsSubmitting) {
-                    e.preventDefault();
-                    return false;
-                }
-
-                ppdbIsSubmitting = true;
-
-                if (loadingOverlay) {
-                    loadingOverlay.classList.add('show');
-                }
-
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                }
-
-                if (submitIcon) {
-                    submitIcon.textContent = '⏳';
-                }
-
-                if (submitText) {
-                    submitText.textContent = 'Mengirim...';
-                }
-            });
-        }
-    </script>
 </body>
 
 </html>
+

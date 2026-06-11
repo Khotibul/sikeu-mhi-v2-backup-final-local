@@ -17,6 +17,7 @@ use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PpdbController;
+use App\Http\Controllers\PpdbEmailVerificationController;
 use App\Http\Controllers\PpdbOnlineController;
 
 /*
@@ -39,6 +40,15 @@ Route::get('/', function () {
 
 Route::get('/ppdb-online', [PpdbOnlineController::class, 'form'])
     ->name('ppdb-online.form');
+
+Route::post('/ppdb-online/verifikasi-email', [PpdbEmailVerificationController::class, 'send'])
+    ->name('ppdb-online.email-verification.send');
+
+Route::post('/ppdb-online/verifikasi-email/konfirmasi', [PpdbEmailVerificationController::class, 'confirm'])
+    ->name('ppdb-online.email-verification.confirm');
+
+Route::get('/ppdb-online/verifikasi-email/{token}', [PpdbEmailVerificationController::class, 'verify'])
+    ->name('ppdb-online.email-verification.verify');
 
 Route::post('/ppdb-online', [PpdbOnlineController::class, 'submit'])
     ->name('ppdb-online.submit');
