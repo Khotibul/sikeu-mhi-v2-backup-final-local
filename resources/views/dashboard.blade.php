@@ -452,6 +452,23 @@
             box-shadow: var(--shadow-soft);
         }
 
+        /* Activity rectangle variant */
+        .glass-panel.activity-rect {
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .transaction-rect-list .trx-complex-item {
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            box-shadow: 0 6px 12px rgba(12, 18, 26, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .panel-header-complex {
             display: flex;
             justify-content: space-between;
@@ -1192,6 +1209,60 @@
                         Data ini mencerminkan arus keuangan utama di pesantren: SPP formal, syahriyah pondok, dan
                         infaq/lainnya. Pastikan setiap transaksi tercatat agar laporan lebih akurat dan mudah dilaporkan.
                     </div>
+
+                    <!-- Pindahkan Aktivitas Terkini ke bawah Analisis Pemasukan -->
+                    <div class="glass-panel activity-rect">
+                        <div class="panel-header-complex"
+                            style="border-bottom: none; padding-bottom: 0; margin-bottom: 20px;">
+                            <div>
+                                <h3>Aktivitas Terkini</h3>
+                                <p>Riwayat pembayaran santri terbaru</p>
+                            </div>
+                            <a href="{{ route('riwayat-transaksi.index') }}"
+                                style="font-size: 12px; font-weight: 800; color: var(--tosca); text-decoration: none; background: var(--tosca-soft); padding: 6px 12px; border-radius: 8px;">Lihat
+                                Semua</a>
+                        </div>
+
+                        <div class="transaction-complex-list transaction-rect-list" id="transaksi-list">
+                            @forelse($transaksiTerakhir as $trx)
+                                <div class="trx-complex-item">
+                                    <div class="trx-av-box">
+                                        @if ($trx['badge'] === 'Formal')
+                                            🏫
+                                        @elseif($trx['badge'] === 'Pondok')
+                                            🕌
+                                        @else
+                                            🧾
+                                        @endif
+                                    </div>
+
+                                    <div class="trx-info">
+                                        <h4>{{ $trx['nama'] }}</h4>
+                                        <div class="trx-tags">
+                                            <span class="badge-type">{{ $trx['jenis'] }}</span>
+                                            @if ($trx['periode'] && $trx['periode'] !== '-')
+                                                <span class="badge-type"
+                                                    style="background: #f1f5f9;">{{ $trx['periode'] }}</span>
+                                            @endif
+                                            <span class="badge-status">✓ Sukses</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="trx-money">
+                                        <strong>Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</strong>
+                                        <span>🕛 {{ \Carbon\Carbon::parse($trx['tanggal'])->format('d M Y') }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="empty-state-complex">
+                                    <div class="icon">📭</div>
+                                    <h4>Belum Ada Transaksi Baru</h4>
+                                    <p>Data pembayaran santri akan otomatis muncul di sini setelah transaksi dilakukan.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -1315,57 +1386,7 @@
                     </div>
                 </div>
 
-                <div class="glass-panel">
-                    <div class="panel-header-complex"
-                        style="border-bottom: none; padding-bottom: 0; margin-bottom: 20px;">
-                        <div>
-                            <h3>Aktivitas Terkini</h3>
-                            <p>Riwayat pembayaran santri terbaru</p>
-                        </div>
-                        <a href="{{ route('riwayat-transaksi.index') }}"
-                            style="font-size: 12px; font-weight: 800; color: var(--tosca); text-decoration: none; background: var(--tosca-soft); padding: 6px 12px; border-radius: 8px;">Lihat
-                            Semua</a>
-                    </div>
 
-                    <div class="transaction-complex-list" id="transaksi-list">
-                        @forelse($transaksiTerakhir as $trx)
-                            <div class="trx-complex-item">
-                                <div class="trx-av-box">
-                                    @if ($trx['badge'] === 'Formal')
-                                        🏫
-                                    @elseif($trx['badge'] === 'Pondok')
-                                        🕌
-                                    @else
-                                        🧾
-                                    @endif
-                                </div>
-
-                                <div class="trx-info">
-                                    <h4>{{ $trx['nama'] }}</h4>
-                                    <div class="trx-tags">
-                                        <span class="badge-type">{{ $trx['jenis'] }}</span>
-                                        @if ($trx['periode'] && $trx['periode'] !== '-')
-                                            <span class="badge-type"
-                                                style="background: #f1f5f9;">{{ $trx['periode'] }}</span>
-                                        @endif
-                                        <span class="badge-status">✓ Sukses</span>
-                                    </div>
-                                </div>
-
-                                <div class="trx-money">
-                                    <strong>Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</strong>
-                                    <span>🕛 {{ \Carbon\Carbon::parse($trx['tanggal'])->format('d M Y') }}</span>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="empty-state-complex">
-                                <div class="icon">📭</div>
-                                <h4>Belum Ada Transaksi Baru</h4>
-                                <p>Data pembayaran santri akan otomatis muncul di sini setelah transaksi dilakukan.</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
 
             </div>
         </div>
