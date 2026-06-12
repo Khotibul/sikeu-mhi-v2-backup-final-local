@@ -87,13 +87,6 @@ class LaporanPemasukanController extends Controller
                         ),
                     ];
                 });
-
-            /*
-             * Penting:
-             * Jika database lama menyimpan santri + bulan + tahun yang sama lebih dari 1 baris,
-             * laporan hanya mengambil 1 baris saja.
-             */
-            $formal = $this->pilihSatuTransaksiBulanan($formal, 'formal');
         }
 
         if ($jenis === 'semua' || $jenis === 'pondok') {
@@ -149,11 +142,6 @@ class LaporanPemasukanController extends Controller
                         ),
                     ];
                 });
-
-            /*
-             * Sama seperti formal: santri + bulan + tahun yang sama hanya dihitung 1.
-             */
-            $pondok = $this->pilihSatuTransaksiBulanan($pondok, 'pondok');
         }
 
         if ($jenis === 'semua' || $jenis === 'lain') {
@@ -226,8 +214,8 @@ class LaporanPemasukanController extends Controller
             ->values();
 
         $rekapNominalGlobal = $semuaTransaksi
-            ->filter(fn ($item) => (int) ($item->nominal ?? 0) > 0)
-            ->groupBy(fn ($item) => (int) $item->nominal)
+            ->filter(fn($item) => (int) ($item->nominal ?? 0) > 0)
+            ->groupBy(fn($item) => (int) $item->nominal)
             ->map(function ($items, $nominal) {
                 $jumlahOrang = $items
                     ->map(function ($item) {
@@ -259,7 +247,7 @@ class LaporanPemasukanController extends Controller
                 return (object) [
                     'kelas' => $kelasGroup,
                     'jumlah_orang' => $items
-                        ->map(fn ($item) => $item->id_siswa ?? $item->nis ?? $item->nama_siswa ?? null)
+                        ->map(fn($item) => $item->id_siswa ?? $item->nis ?? $item->nama_siswa ?? null)
                         ->filter()
                         ->unique()
                         ->count(),
@@ -277,7 +265,7 @@ class LaporanPemasukanController extends Controller
         $totalPemasukan = $semuaTransaksi->sum('nominal');
         $jumlahTransaksi = $semuaTransaksi->count();
         $jumlahSantriBayar = $semuaTransaksi
-            ->map(fn ($item) => $item->id_siswa ?? $item->nis ?? $item->nisn ?? $item->nama_siswa ?? null)
+            ->map(fn($item) => $item->id_siswa ?? $item->nis ?? $item->nisn ?? $item->nama_siswa ?? null)
             ->filter()
             ->unique()
             ->count();
@@ -331,44 +319,6 @@ class LaporanPemasukanController extends Controller
         }
     }
 
-    private function pilihSatuTransaksiBulanan($items, string $sumber)
-    {
-        return collect($items)
-            ->filter(function ($item) {
-                return !empty($item->id_siswa)
-                    && !empty($item->bulan_bayar)
-                    && !empty($item->tahun_bayar);
-            })
-            ->groupBy(function ($item) use ($sumber) {
-                return implode('|', [
-                    $sumber,
-                    (string) ($item->id_siswa ?? ''),
-                    strtolower(trim((string) ($item->bulan_bayar ?? ''))),
-                    trim((string) ($item->tahun_bayar ?? '')),
-                ]);
-            })
-            ->map(function ($group) {
-                /*
-                 * Jika ada duplikat, ambil satu saja.
-                 * Prioritas: nominal laporan terbesar setelah dicap bulanan,
-                 * lalu tanggal/id terbaru. Karena nominal sudah dicap bulanan,
-                 * baris 260/390 dari DB lama tidak akan ikut membesarkan laporan.
-                 */
-                return $group
-                    ->sortByDesc(function ($item) {
-                        $nominal = (int) ($item->nominal ?? 0);
-                        $tanggal = $item->tanggal ?? '1970-01-01';
-                        $timestamp = strtotime((string) $tanggal) ?: 0;
-                        $id = (int) ($item->id ?? 0);
-
-                        return sprintf('%012d-%010d-%010d', $nominal, $timestamp, $id);
-                    })
-                    ->first();
-            })
-            ->filter()
-            ->values();
-    }
-
     private function ambilNominalPembayaran($item): int
     {
         $terbayar = (int) ($item->terbayar ?? 0);
@@ -380,8 +330,8 @@ class LaporanPemasukanController extends Controller
         return (int) ($item->jumlah_bayar ?? $item->nominal_bayar ?? 0);
     }
 
-    
-private function statusPembayaranLaporan($item, int $nominalBayar, int $tagihan): string
+
+    private function statusPembayaranLaporan($item, int $nominalBayar, int $tagihan): string
     {
         $statusDb = strtoupper(trim((string) ($item->status_bayar ?? $item->status ?? '')));
 
@@ -587,18 +537,33 @@ private function statusPembayaranLaporan($item, int $nominalBayar, int $tagihan)
         $bulan = strtolower(trim((string) $bulan));
 
         $map = [
-            'januari' => 1, 'jan' => 1,
-            'februari' => 2, 'feb' => 2,
-            'maret' => 3, 'mar' => 3,
-            'april' => 4, 'apr' => 4,
-            'mei' => 5, 'may' => 5,
-            'juni' => 6, 'jun' => 6,
-            'juli' => 7, 'jul' => 7,
-            'agustus' => 8, 'agu' => 8, 'aug' => 8,
-            'september' => 9, 'sep' => 9,
-            'oktober' => 10, 'okt' => 10, 'oct' => 10,
-            'november' => 11, 'nov' => 11,
-            'desember' => 12, 'des' => 12, 'dec' => 12,
+            'januari' => 1,
+            'jan' => 1,
+            'februari' => 2,
+            'feb' => 2,
+            'maret' => 3,
+            'mar' => 3,
+            'april' => 4,
+            'apr' => 4,
+            'mei' => 5,
+            'may' => 5,
+            'juni' => 6,
+            'jun' => 6,
+            'juli' => 7,
+            'jul' => 7,
+            'agustus' => 8,
+            'agu' => 8,
+            'aug' => 8,
+            'september' => 9,
+            'sep' => 9,
+            'oktober' => 10,
+            'okt' => 10,
+            'oct' => 10,
+            'november' => 11,
+            'nov' => 11,
+            'desember' => 12,
+            'des' => 12,
+            'dec' => 12,
         ];
 
         /*

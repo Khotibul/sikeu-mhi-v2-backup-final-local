@@ -1093,7 +1093,7 @@ return $items->first();
                     $riwayatBulanFormal = $riwayatFormalBulanMap->get($bulanKeyFormal);
 
                     $adaPembayaranFormal = $riwayatBulanFormal || $nominalTerbayarFormal > 0;
-                    $isLunas = $nominalTagihanFormal <= 0 || $nominalSisaFormal <=0;
+                    $isLunas = ($nominalSisaFormal <= 0 && $nominalTerbayarFormal > 0) || ($nominalTagihanFormal <= 0);
 
                         if ($isLunas) {
                         $status='LUNAS' ;
@@ -1246,7 +1246,7 @@ return $items->first();
                     $riwayatBulanPondok = $riwayatPondokBulanMap->get($bulanKeyPondok);
 
                     $adaPembayaranPondok = $riwayatBulanPondok || $nominalTerbayarPondok > 0;
-                    $isLunas = $nominalTagihanPondok <= 0 || $nominalSisaPondok <=0;
+                    $isLunas = ($nominalSisaPondok <= 0 && $nominalTerbayarPondok > 0) || ($nominalTagihanPondok <= 0);
 
                         if ($isLunas) {
                         $status='LUNAS' ;

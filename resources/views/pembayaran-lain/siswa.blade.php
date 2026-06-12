@@ -574,11 +574,26 @@
                                 @php
                                     $namaJenis = $jenis->nama_jenis ?? ($jenis->jenis_tagihan ?? ($jenis->nama ?? '-'));
                                     $nominalStandar = (int) ($jenis->nominal_standar ?? ($jenis->nominal ?? 0));
+
+                                    $sisaTagihan = $nominalStandar;
+                                    $statusTagihan = null;
+
+                                    if (isset($rekapTagihan)) {
+                                        $rekap = collect($rekapTagihan)->firstWhere('nama_jenis', $namaJenis);
+                                        if ($rekap) {
+                                            $sisaTagihan = $rekap['sisa'];
+                                            $statusTagihan = $rekap['status'];
+                                        }
+                                    }
                                 @endphp
 
-                                <option value="{{ $namaJenis }}" data-nominal="{{ $nominalStandar }}">
+                                <option value="{{ $namaJenis }}" data-nominal="{{ $sisaTagihan }}">
                                     {{ $namaJenis }}
-                                    @if ($nominalStandar > 0)
+                                    @if ($statusTagihan === 'LUNAS')
+                                        - LUNAS
+                                    @elseif ($sisaTagihan > 0)
+                                        - Sisa Rp {{ number_format($sisaTagihan, 0, ',', '.') }}
+                                    @elseif ($nominalStandar > 0)
                                         - Rp {{ number_format($nominalStandar, 0, ',', '.') }}
                                     @endif
                                 </option>
@@ -740,9 +755,22 @@
         const jenisTagihan = document.getElementById('jenis_tagihan');
         const nominalBayar = document.getElementById('nominal_bayar');
         const previewNominal = document.getElementById('preview_nominal');
+        const fieldKeterangan = document.querySelector('textarea[name="keterangan"]');
 
         function updatePreview() {
             previewNominal.textContent = formatRupiah(nominalBayar.value);
+
+            if (jenisTagihan && nominalBayar && fieldKeterangan) {
+                const selected = jenisTagihan.options[jenisTagihan.selectedIndex];
+                const sisa = parseInt(selected?.getAttribute('data-nominal') || 0);
+                const bayar = parseInt(nominalBayar.value || 0);
+
+                if (sisa > 0 && bayar > 0 && bayar < sisa) {
+                    fieldKeterangan.placeholder = "Otomatis diisi: CICILAN (karena bayar kurang dari sisa tagihan)";
+                } else {
+                    fieldKeterangan.placeholder = "Contoh: Pembayaran daftar ulang / UKT / seragam...";
+                }
+            }
         }
 
         if (jenisTagihan) {

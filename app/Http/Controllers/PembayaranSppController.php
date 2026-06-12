@@ -83,8 +83,6 @@ class PembayaranSppController extends Controller
                 ->orderByDesc('tgl_bayar')
                 ->orderByDesc('id_bayar')
                 ->get();
-
-            $riwayatFormal = $this->pilihSatuTransaksiBulanan($riwayatFormal, 'formal');
         }
 
         if ($tampilPondok && ($jenisRiwayat === 'semua' || $jenisRiwayat === 'pondok')) {
@@ -92,8 +90,6 @@ class PembayaranSppController extends Controller
                 ->orderByDesc('tgl_bayar')
                 ->orderByDesc('id_bayar_diniyah')
                 ->get();
-
-            $riwayatPondok = $this->pilihSatuTransaksiBulanan($riwayatPondok, 'pondok');
         }
 
         return view('pembayaran-spp.pilih-siswa', compact(
@@ -341,8 +337,6 @@ class PembayaranSppController extends Controller
                 abort(404);
             }
 
-            $items = $this->pilihSatuTransaksiBulanan($items, 'formal');
-
             $siswa = $items->first();
             $total = $items->sum(fn($item) => $this->ambilNominalLegacy($item));
             $nomorKwitansi = 'KWF-' . now()->format('Ymd') . '-' . str_pad($ids->first(), 5, '0', STR_PAD_LEFT);
@@ -380,8 +374,6 @@ class PembayaranSppController extends Controller
                 abort(404);
             }
 
-            $items = $this->pilihSatuTransaksiBulanan($items, 'pondok');
-
             $siswa = $items->first();
             $total = $items->sum(fn($item) => $this->ambilNominalLegacy($item));
             $nomorKwitansi = 'KWP-' . now()->format('Ymd') . '-' . str_pad($ids->first(), 5, '0', STR_PAD_LEFT);
@@ -417,7 +409,7 @@ class PembayaranSppController extends Controller
             'ids' => $id,
         ]);
     }
-public function kwitansiGabungan(Request $request)
+    public function kwitansiGabungan(Request $request)
     {
         $formalIds = $request->formal_ids ?? [];
         $pondokIds = $request->pondok_ids ?? [];
@@ -443,8 +435,6 @@ public function kwitansiGabungan(Request $request)
                 )
                 ->whereIn('pembayaran.id_bayar', $formalIds)
                 ->get();
-
-            $formal = $this->pilihSatuTransaksiBulanan($formal, 'formal');
         }
 
         $pondok = collect();
@@ -464,8 +454,6 @@ public function kwitansiGabungan(Request $request)
                 )
                 ->whereIn('pembayaran_diniyah.id_bayar_diniyah', $pondokIds)
                 ->get();
-
-            $pondok = $this->pilihSatuTransaksiBulanan($pondok, 'pondok');
         }
 
         $items = collect();
@@ -691,29 +679,39 @@ public function kwitansiGabungan(Request $request)
 
     private function totalTerbayarFormal($idSiswa, $bulan, $tahunBayar, $tahunAjaran): int
     {
+        // NOTE:
+        // Jangan pakai pilihSatuTransaksiBulanan di sini.
+        // Karena halaman ini menampilkan sisa per-bulan (akumulasi cicilan).
+        // Jika hanya 1 transaksi yang dihitung, status di UI bisa tidak update.
         $query = Pembayaran::where('id_siswa', $idSiswa)
             ->where('bulan_bayar', $bulan)
             ->where('tahun_bayar', $tahunBayar);
 
         $this->filterTahunAjaranFleksibel($query, 'pembayaran', $tahunAjaran);
 
-        $items = $this->pilihSatuTransaksiBulanan($query->get(), 'formal');
+        $items = $query->get();
 
         return (int) $items->sum(fn($item) => $this->ambilNominalLegacy($item));
     }
 
+
     private function totalTerbayarPondok($idSiswa, $bulan, $tahunBayar, $tahunAjaran): int
     {
+        // NOTE:
+        // Jangan pakai pilihSatuTransaksiBulanan di sini.
+        // Karena halaman ini menampilkan sisa per-bulan (akumulasi cicilan).
+        // Jika hanya 1 transaksi yang dihitung, status di UI bisa tidak update.
         $query = PembayaranDiniyah::where('id_siswa', $idSiswa)
             ->where('bulan_bayar', $bulan)
             ->where('tahun_bayar', $tahunBayar);
 
         $this->filterTahunAjaranFleksibel($query, 'pembayaran_diniyah', $tahunAjaran);
 
-        $items = $this->pilihSatuTransaksiBulanan($query->get(), 'pondok');
+        $items = $query->get();
 
         return (int) $items->sum(fn($item) => $this->ambilNominalLegacy($item));
     }
+
 
     private function filterTahunAjaranFleksibel($query, string $table, string $tahunAjaran): void
     {
@@ -739,7 +737,7 @@ public function kwitansiGabungan(Request $request)
             'akhir' => $parts[1] ?? null,
         ];
     }
-private function statusTagihan(int $tagihan, int $terbayar): string
+    private function statusTagihan(int $tagihan, int $terbayar): string
     {
         if ($tagihan <= 0 || $terbayar <= 0) {
             return 'BELUM';
@@ -986,39 +984,6 @@ private function statusTagihan(int $tagihan, int $terbayar): string
         return 0;
     }
 
-
-    private function pilihSatuTransaksiBulanan($items, string $sumber)
-    {
-        return collect($items)
-            ->filter(function ($item) {
-                return !empty($item->id_siswa)
-                    && !empty($item->bulan_bayar)
-                    && !empty($item->tahun_bayar);
-            })
-            ->groupBy(function ($item) use ($sumber) {
-                return implode('|', [
-                    $sumber,
-                    (string) ($item->id_siswa ?? ''),
-                    strtolower(trim((string) ($item->bulan_bayar ?? ''))),
-                    trim((string) ($item->tahun_bayar ?? '')),
-                ]);
-            })
-            ->map(function ($group) {
-                return $group
-                    ->sortByDesc(function ($item) {
-                        $nominal = $this->ambilNominalLegacy($item);
-                        $tanggal = $item->tgl_bayar ?? $item->created_at ?? '1970-01-01';
-                        $timestamp = strtotime((string) $tanggal) ?: 0;
-                        $id = (int) ($item->id_bayar ?? $item->id_bayar_diniyah ?? $item->id ?? 0);
-
-                        return sprintf('%012d-%010d-%010d', $nominal, $timestamp, $id);
-                    })
-                    ->first();
-            })
-            ->filter()
-            ->values();
-    }
-
     private function ambilNominalLegacy($item): int
     {
         $terbayar = (int) ($item->terbayar ?? 0);
@@ -1057,7 +1022,7 @@ private function statusTagihan(int $tagihan, int $terbayar): string
     }
 
 
-private function normalisasiStatusPembayaran(?string $status): string
+    private function normalisasiStatusPembayaran(?string $status): string
     {
         $status = strtoupper(trim((string) $status));
 
@@ -1229,7 +1194,7 @@ private function normalisasiStatusPembayaran(?string $status): string
     {
         return trim($this->penyebut($nilai));
     }
-public function cetakGabunganTanggal(Request $request, $id)
+    public function cetakGabunganTanggal(Request $request, $id)
     {
         $tanggal = $request->query('tanggal');
 
@@ -1257,8 +1222,6 @@ public function cetakGabunganTanggal(Request $request, $id)
                 ->whereDate('tgl_bayar', $tanggalNormal)
                 ->get();
 
-            $formal = $this->pilihSatuTransaksiBulanan($formal, 'formal');
-
             foreach ($formal as $item) {
                 $statusBayar = $this->statusPembayaranItem($item, 'formal', $siswa);
 
@@ -1281,8 +1244,6 @@ public function cetakGabunganTanggal(Request $request, $id)
                 ->where('id_siswa', $id)
                 ->whereDate('tgl_bayar', $tanggalNormal)
                 ->get();
-
-            $pondok = $this->pilihSatuTransaksiBulanan($pondok, 'pondok');
 
             foreach ($pondok as $item) {
                 $statusBayar = $this->statusPembayaranItem($item, 'diniyah', $siswa);
@@ -1332,7 +1293,7 @@ public function cetakGabunganTanggal(Request $request, $id)
             'admin'
         ));
     }
-public function bayarGabungan(Request $request, $id)
+    public function bayarGabungan(Request $request, $id)
     {
         $siswa = Siswa::findOrFail($id);
 
@@ -1476,8 +1437,8 @@ public function bayarGabungan(Request $request, $id)
             return back()->with(
                 'success',
                 'Pembayaran berhasil disimpan. Berhasil: ' . $berhasil .
-                ' item. Dilewati: ' . $dilewati .
-                '. Total Rp ' . number_format($total, 0, ',', '.')
+                    ' item. Dilewati: ' . $dilewati .
+                    '. Total Rp ' . number_format($total, 0, ',', '.')
             );
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -1485,32 +1446,32 @@ public function bayarGabungan(Request $request, $id)
             return back()->with('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
         }
     }
-    
+
     private function tabelPembayaranByJenis(string $jenis): string
     {
         return $jenis === 'formal' ? 'pembayaran' : 'pembayaran_diniyah';
     }
-    
+
     private function sudahLunasBulanan($idSiswa, string $jenis, string $bulan, string $tahun): bool
     {
         $table = $this->tabelPembayaranByJenis($jenis);
-    
+
         if (!Schema::hasTable($table)) {
             return false;
         }
-    
+
         $columns = Schema::getColumnListing($table);
-    
+
         $query = DB::table($table);
-    
+
         if (in_array('id_siswa', $columns, true)) {
             $query->where('id_siswa', $idSiswa);
         } elseif (in_array('id_santri', $columns, true)) {
             $query->where('id_santri', $idSiswa);
         }
-    
+
         $this->whereKolomBulanTahun($query, $columns, $bulan, $tahun);
-    
+
         if (in_array('status', $columns, true)) {
             $query->where(function ($q) {
                 $q->where('status', 'Lunas')
@@ -1518,10 +1479,10 @@ public function bayarGabungan(Request $request, $id)
                     ->orWhere('status', 'LUNAS');
             });
         }
-    
+
         return $query->exists();
     }
-    
+
     private function whereKolomBulanTahun($query, array $columns, string $bulan, string $tahun): void
     {
         if (in_array('bulan', $columns, true)) {
@@ -1531,14 +1492,14 @@ public function bayarGabungan(Request $request, $id)
         } elseif (in_array('nama_bulan', $columns, true)) {
             $query->where('nama_bulan', $bulan);
         }
-    
+
         if (in_array('tahun', $columns, true)) {
             $query->where('tahun', $tahun);
         } elseif (in_array('tahun_bayar', $columns, true)) {
             $query->where('tahun_bayar', $tahun);
         }
     }
-private function insertPembayaranBulanan($idSiswa, array $item): void
+    private function insertPembayaranBulanan($idSiswa, array $item): void
     {
         $jenis = strtolower($item['jenis']);
         $table = $this->tabelPembayaranByJenis($jenis);
@@ -1600,7 +1561,7 @@ private function insertPembayaranBulanan($idSiswa, array $item): void
 
             'nominal' => $nominal,
             'jumlah' => $nominal,
-            'jumlah_bayar' => $nominal,
+            'jumlah_bayar' => $tagihan,
             'bayar' => $nominal,
             'terbayar' => $nominal,
 
@@ -1626,54 +1587,54 @@ private function insertPembayaranBulanan($idSiswa, array $item): void
             'tahun_ajaran' => $tahunAjaran,
         ]));
     }
-    
+
     private function insertRiwayatPembayaranBulanan($idSiswa, string $jenis, array $item): void
     {
         if (!Schema::hasTable('riwayat_transaksi')) {
             return;
         }
-    
+
         $columns = Schema::getColumnListing('riwayat_transaksi');
         $now = now();
-    
+
         $labelJenis = $jenis === 'formal' ? 'Formal' : 'Pondok/Diniyah';
         $keterangan = 'Pembayaran ' . $labelJenis . ' ' . $item['bulan'] . ' ' . $item['tahun'];
-    
+
         $candidate = [
             'id_siswa' => $idSiswa,
             'id_santri' => $idSiswa,
-    
+
             'tanggal' => $now->toDateString(),
             'tgl_transaksi' => $now->toDateString(),
             'tanggal_transaksi' => $now->toDateString(),
-    
+
             'bulan' => $item['bulan'],
             'bulan_bayar' => $item['bulan'],
-    
+
             'tahun' => $item['tahun'],
             'tahun_bayar' => $item['tahun'],
-    
+
             'jenis' => $jenis,
             'jenis_transaksi' => 'pemasukan',
             'kategori' => $labelJenis,
-    
+
             'keterangan' => $keterangan,
             'uraian' => $keterangan,
-    
+
             'nominal' => (int) $item['nominal'],
             'jumlah' => (int) $item['nominal'],
-    
-            'status' => 'Lunas',
-    
+
+            'status' => $item['status_bayar'] ?? 'Lunas',
+
             'id_admin' => session('admin_id'),
             'admin_id' => session('admin_id'),
-    
+
             'created_at' => $now,
             'updated_at' => $now,
         ];
-    
+
         $data = collect($candidate)->only($columns)->toArray();
-    
+
         DB::table('riwayat_transaksi')->insert($data);
     }
 }

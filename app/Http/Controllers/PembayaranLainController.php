@@ -135,6 +135,8 @@ class PembayaranLainController extends Controller
             ->where('jenis_tagihan', $jenis->nama_jenis)
             ->sum('nominal_bayar');
 
+        $keteranganOtomatis = 'LUNAS';
+
         if ($nominalTagihan > 0) {
             $sisa = max($nominalTagihan - $sudahTerbayar, 0);
 
@@ -149,6 +151,10 @@ class PembayaranLainController extends Controller
                     ->withInput()
                     ->with('error', 'Nominal pembayaran melebihi sisa tagihan. Sisa tagihan Rp ' . number_format($sisa, 0, ',', '.'));
             }
+
+            if (($sudahTerbayar + $nominalBayar) < $nominalTagihan) {
+                $keteranganOtomatis = 'CICILAN';
+            }
         }
 
         PembayaranPangkal::insert([
@@ -156,7 +162,7 @@ class PembayaranLainController extends Controller
             'tgl_bayar' => $request->tgl_bayar,
             'jenis_tagihan' => $jenis->nama_jenis,
             'nominal_bayar' => $nominalBayar,
-            'keterangan' => $request->keterangan ?: 'LUNAS',
+            'keterangan' => $request->keterangan ?: $keteranganOtomatis,
             'id_admin' => session('admin_id') ?? 0,
         ]);
 
