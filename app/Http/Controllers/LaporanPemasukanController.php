@@ -10,8 +10,10 @@ class LaporanPemasukanController extends Controller
 {
     private array $cacheNominalFormal = [];
     private array $cacheNominalDiniyah = [];
+    private array $cacheJenisPembayaran = [];
     private bool $nominalFormalLoaded = false;
     private bool $nominalDiniyahLoaded = false;
+    private bool $jenisPembayaranLoaded = false;
 
     public function index(Request $request)
     {
@@ -182,6 +184,10 @@ class LaporanPemasukanController extends Controller
                 ->orderBy('pembayaran_pangkal.id_pangkal')
                 ->get()
                 ->map(function ($item) {
+                    $nominal = (int) ($item->nominal_bayar ?? 0);
+                    $nominalStandar = $this->nominalStandarPembayaranLain($item->jenis_tagihan ?? null);
+                    $statusLunas = $this->statusPembayaranLaporan($item, $nominal, $nominalStandar);
+
                     return (object) [
                         'id' => $item->id_pangkal ?? null,
                         'id_siswa' => $item->id_siswa ?? null,
@@ -198,8 +204,8 @@ class LaporanPemasukanController extends Controller
                         'bulan_bayar' => null,
                         'tahun_bayar' => null,
                         'tahun_ajaran' => null,
-                        'nominal' => (int) ($item->nominal_bayar ?? 0),
-                        'status_lunas' => 'LUNAS',
+                        'nominal' => $nominal,
+                        'status_lunas' => $statusLunas,
                         'status_waktu' => 'LANCAR',
                     ];
                 });
@@ -432,6 +438,15 @@ class LaporanPemasukanController extends Controller
         return (int) ($this->cacheNominalDiniyah[$key] ?? 0);
     }
 
+    private function nominalStandarPembayaranLain(?string $jenis): int
+    {
+        $this->loadJenisPembayaran();
+
+        $key = $this->normalKey($jenis);
+
+        return (int) ($this->cacheJenisPembayaran[$key] ?? 0);
+    }
+
     private function loadNominalFormal(): void
     {
         if ($this->nominalFormalLoaded) {
@@ -469,6 +484,26 @@ class LaporanPemasukanController extends Controller
                 });
         } catch (\Throwable $e) {
             $this->cacheNominalDiniyah = [];
+        }
+    }
+
+    private function loadJenisPembayaran(): void
+    {
+        if ($this->jenisPembayaranLoaded) {
+            return;
+        }
+
+        $this->jenisPembayaranLoaded = true;
+
+        try {
+            DB::table('jenis_pembayaran')
+                ->select('nama_jenis', 'nominal_standar')
+                ->get()
+                ->each(function ($item) {
+                    $this->cacheJenisPembayaran[$this->normalKey($item->nama_jenis ?? '')] = (int) ($item->nominal_standar ?? 0);
+                });
+        } catch (\Throwable $e) {
+            $this->cacheJenisPembayaran = [];
         }
     }
 
